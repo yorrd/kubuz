@@ -94,13 +94,13 @@ public class EXAMPLEsimplePrimitives {
  
             // Release window and window callbacks
             glfwDestroyWindow(window);
-            keyCallback.release();
+            glfwSetKeyCallback(window, null);
         } catch (Exception e){
         	e.printStackTrace();
         } finally {
             // Terminate GLFW and release the GLFWerrorfun
             glfwTerminate();
-            errorCallback.release();
+            glfwSetKeyCallback(window, null);
         }
     }
  
@@ -111,7 +111,7 @@ public class EXAMPLEsimplePrimitives {
         glfwSetErrorCallback(errorCallback = GLFWErrorCallback.createPrint(System.err));
  
         // Initialize GLFW. Most GLFW functions will not work before doing this.
-        if ( glfwInit() != GL11.GL_TRUE )
+        if ( !glfwInit() )
             throw new IllegalStateException("Unable to initialize GLFW");
 
         // Configure our window
@@ -134,7 +134,7 @@ public class EXAMPLEsimplePrimitives {
             @Override
             public void invoke(long window, int key, int scancode, int action, int mods) {
             	if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
-                    glfwSetWindowShouldClose(window, GL_TRUE); // We will detect this in our rendering loop
+                    glfwSetWindowShouldClose(window, true); // We will detect this in our rendering loop
             	if ( key == GLFW_KEY_RIGHT )
                     modelAngle.y += deltaRot;
             	if ( key == GLFW_KEY_LEFT )
@@ -415,7 +415,7 @@ public class EXAMPLEsimplePrimitives {
 
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
-        while ( glfwWindowShouldClose(window) == GL_FALSE ) {
+        while ( !glfwWindowShouldClose(window) ) {
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
