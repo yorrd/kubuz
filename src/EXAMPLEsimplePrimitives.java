@@ -100,7 +100,6 @@ public class EXAMPLEsimplePrimitives {
         } finally {
             // Terminate GLFW and release the GLFWerrorfun
             glfwTerminate();
-            glfwSetKeyCallback(window, null);
         }
     }
  
