@@ -10,7 +10,6 @@
   */
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.Version;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 
@@ -45,8 +44,8 @@ public class EXAMPLEsimplePrimitives {
     private long window;
     
     // Window size
-    private int WIDTH = 800;
-    private int HEIGHT = 640;
+    static int WIDTH = 800;
+    static int HEIGHT = 640;
     
     // Buffer IDs
   	private int vaoId = 0;
@@ -220,7 +219,7 @@ public class EXAMPLEsimplePrimitives {
     	viewMatrix = new TranslationMatrix(cameraPos);
     }
 
-    public int loadShader(String filename, int type) {
+    public static int loadShader(String filename, int type) {
         StringBuilder shaderSource = new StringBuilder();
         int shaderID = 0;
 
@@ -237,7 +236,7 @@ public class EXAMPLEsimplePrimitives {
             System.exit(-1);
         }
 
-        shaderID = GL20.glCreateShader(type);
+        shaderID = glCreateShader(type);
         glShaderSource(shaderID, shaderSource);
         glCompileShader(shaderID);
 
@@ -249,9 +248,9 @@ public class EXAMPLEsimplePrimitives {
 
         // ============================= 1. Shader: For vertices ==================================
         // Load the vertex shader
-        vsId = this.loadShader("./src/shaders/vertex.glsl", GL_VERTEX_SHADER);
+        vsId = loadShader("./src/shaders/vertex.glsl", GL_VERTEX_SHADER);
         // Load the fragment shader
-        fsId = this.loadShader("./src/shaders/fragment.glsl", GL_FRAGMENT_SHADER);
+        fsId = loadShader("./src/shaders/fragment.glsl", GL_FRAGMENT_SHADER);
 
         // Create a new shader program that links both shaders
         pId = glCreateProgram();
@@ -290,7 +289,7 @@ public class EXAMPLEsimplePrimitives {
      * @param textureUnit
      * @return textureID
      */
-    private int loadPNGTexture(String filename, int textureUnit) {
+    static int loadPNGTexture(String filename, int textureUnit) {
         ByteBuffer buf = null;
         int tWidth = 0;
         int tHeight = 0;
@@ -319,7 +318,7 @@ public class EXAMPLEsimplePrimitives {
         }
 
         // Create a new texture object in memory and bind it
-        int texId = GL11.glGenTextures();
+        int texId = glGenTextures();
         glActiveTexture(textureUnit);
         glBindTexture(GL_TEXTURE_2D, texId);
 
@@ -327,7 +326,7 @@ public class EXAMPLEsimplePrimitives {
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
         // Upload the texture data and generate mip maps (for scaling)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL11.GL_RGB, tWidth, tHeight, 0,
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tWidth, tHeight, 0,
                 GL_RGBA, GL_UNSIGNED_BYTE, buf);
         glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -462,6 +461,10 @@ public class EXAMPLEsimplePrimitives {
             glBindVertexArray(0);
             glUseProgram(0);
 
+            // ================================== Draw GUI =====================================
+
+            GUI.getInstance().render();
+
             // Swap the color buffer. We never draw directly to the screen, only in this buffer. So we need to display it
     		glfwSwapBuffers(window);
             
@@ -475,7 +478,7 @@ public class EXAMPLEsimplePrimitives {
      * @param m
      * @return
      */
-	private FloatBuffer toFFB(Matrix4 m){
+	protected static FloatBuffer toFFB(Matrix4 m){
 		FloatBuffer res = BufferUtils.createFloatBuffer(16);
 		for (int i=0;i<4;i++){
 			for (int j=0;j<4;j++){
