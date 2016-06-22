@@ -96,9 +96,8 @@ public class Kubus implements Renderable {
 		return vertex_segment;
     }
     
-    @Override
     public void moveZ(float offset_z){
-    	if (vertexArray[2] > 0.4f) {
+    	if (vertexArray[2] > 0.5f) {
         	vertexArray = changeZ(z_distance + offset_z, vertexArray);
         	}
     	else
