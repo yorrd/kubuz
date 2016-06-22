@@ -10,8 +10,8 @@
 public class Kubus implements Renderable {
 
     private int renderDepth = 15;
-    private int numEdges = 4;
-    private int segments = 2;
+    private int numEdges = 5;
+    private int segments = 4;
     private float radius = 2f;
     private float z_distance = -0.2f;
 
@@ -81,11 +81,24 @@ public class Kubus implements Renderable {
     }
     
     public void create_texture() {
-        textureArray = new float[]{
-                0.0f, 1.0f,
-                0.5f, 1.0f,
-                1.0f, 1.0f,
-        };
+    	int index = 0;
+        textureArray = new float[2  * numEdges * segments * renderDepth];
+    	for(int i = 0; i < renderDepth; i ++) {
+    		if (i % 2 == 0){
+            	for(int j = 0; j < numEdges * segments; j ++) {
+            		textureArray[index++] = (j % 2) + 0f;
+            		textureArray[index++] = 0f;
+            	}	
+    		}
+    		else {
+            	for(int j = 0; j < numEdges * segments; j ++) {
+            		textureArray[index++] = (j % 2) + 0f;
+            		textureArray[index++] = 1f;
+            	}	
+    		}
+
+    	}
+
     }
 
     // Funktion zum Anpassen der z-Koordinate
