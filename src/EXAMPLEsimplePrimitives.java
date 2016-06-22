@@ -214,7 +214,7 @@ public class EXAMPLEsimplePrimitives {
     private void setupMatrices() {
 
     	// Setup projection and view matrix
-    	projectionMatrix = new PerspectiveMatrix(-1,1,-1,1,0.1f,3);
+    	projectionMatrix = new PerspectiveMatrix(-1,1,-1,1,0.1f,2);
     	viewMatrix = new TranslationMatrix(cameraPos);
     }
 
