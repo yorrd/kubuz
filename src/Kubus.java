@@ -9,10 +9,11 @@
 
 public class Kubus implements Renderable {
 
-    private int renderDepth = 8;
+    private int renderDepth = 15;
     private int numEdges = 4;
     private int segments = 2;
     private float radius = 1f;
+    private float z_distance = -0.04f;
 
     private float[] vertexArray;
     private float[] textureArray;
@@ -24,7 +25,6 @@ public class Kubus implements Renderable {
 		indexArray = create_index();
 		create_texture();
 		
-		
 	}
 
     public void create_initial() {
@@ -32,13 +32,11 @@ public class Kubus implements Renderable {
     	segmentArray = create_segment(0f);
     	vertexArray = new float[segmentArray.length * renderDepth];
        	int index_vertex = 0;
-       	float z = 0f;
         for(int i = 0; i < renderDepth; i ++) {
-        	segmentArray = changeZ(z, segmentArray); 
+        	segmentArray = changeZ(z_distance, segmentArray); 
             for(int j = 0; j < segmentArray.length; j ++) {
             	vertexArray[index_vertex++] = segmentArray[j];
             }
-        	z += 0.1f;
         }
     }
 
@@ -93,9 +91,18 @@ public class Kubus implements Renderable {
     // Funktion zum Anpassen der z-Koordinate
     public float[] changeZ(float offset_z, float[] vertex_segment) {
     	for(int i = 2; i < vertex_segment.length; i += 3) {
-    		vertex_segment[i] = offset_z;
+    		vertex_segment[i] += offset_z;
     	}
 		return vertex_segment;
+    }
+    
+    @Override
+    public void moveZ(float offset_z){
+    	vertexArray = changeZ(offset_z, vertexArray);
+    	if (vertexArray[2] > 0.4f) {
+        	vertexArray = changeZ(z_distance, vertexArray);
+        	}
+    	System.out.println(vertexArray[2]);
     }
 
     @Override
