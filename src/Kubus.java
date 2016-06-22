@@ -1,3 +1,10 @@
+/**
+ * 
+ * 
+ * @author Sebastian Kriege
+ * Damit die Ümläüte öch rüchtüg gäyn
+ */
+
 
 
 public class Kubus implements Renderable {
@@ -10,8 +17,17 @@ public class Kubus implements Renderable {
     private float[] vertexArray;
     private float[] textureArray;
     private int[] indexArray;
+    
+	@Override
+	public void render() {
+		create_initial();
+		indexArray = create_index();
+		create_texture();
+		
+		
+	}
 
-    public float[] create_initial() {
+    public void create_initial() {
        	float[] segmentArray = new float[3  * numEdges * segments];
     	segmentArray = create_segment(0f);
     	vertexArray = new float[segmentArray.length * renderDepth];
@@ -22,12 +38,8 @@ public class Kubus implements Renderable {
             for(int j = 0; j < segmentArray.length; j ++) {
             	vertexArray[index_vertex++] = segmentArray[j];
             }
-        	z += 0.2f;
+        	z += 0.1f;
         }
-    	for(int i = 0; i < vertexArray.length; i++) {
-    		System.out.println(vertexArray[i]);
-    	}
-		return vertexArray;
     }
 
     public float[] create_segment(float offset_z) {
@@ -40,12 +52,11 @@ public class Kubus implements Renderable {
         	vertex_segment[index++] = (float) (radius * Math.cos(1.5f * Math.PI + angle / 2 - angle * edge));
         	vertex_segment[index++] = (float) (radius * Math.sin(1.5f * Math.PI + angle / 2 - angle * edge));
         	vertex_segment[index++] = offset_z;
-        	// für die Schrittweite wird der nächste Eckpunkt berechnet und der Abstand durch Anzahl segmente geteilt
+        	// für die Schrittweite wird der naechste Eckpunkt berechnet und der Abstand durch Anzahl segmente geteilt
         	step[0] = ((float) (radius * Math.cos(1.5f * Math.PI + angle / 2 - angle * (edge + 1)))
         				- vertex_segment[index - 3]) / segments;
         	step[1] = ((float) (radius * Math.sin(1.5f * Math.PI + angle / 2 - angle * (edge + 1)))
     				    - vertex_segment[index - 2]) / segments;
-        	System.out.println("Step" + step[0] + step[1]);
         	for(int i = 1; i < segments; i++) {
             	vertex_segment[index++] = vertex_segment[index - 4] + step[0];
             	vertex_segment[index++] = vertex_segment[index - 4] + step[1];
@@ -55,6 +66,30 @@ public class Kubus implements Renderable {
 		return vertex_segment;
     }
     
+    public int[] create_index() {
+    	int[] indexArray = new int[6  * (numEdges * segments + 1) * renderDepth];
+		int index = 0;
+		for (int j = 0; j < renderDepth - 1; j++){
+			for (int i = 0; i < (segments * numEdges + 1); i++){
+					indexArray[index++] =  j * segments * numEdges + i % (segments * numEdges);
+					indexArray[index++] = (j + 1) * segments * numEdges + (i + 1) % (segments * numEdges);
+					indexArray[index++] = (j + 1) * segments * numEdges + i % (segments * numEdges);
+					indexArray[index++] = (j + 1) * segments * numEdges + (i + 1) % (segments * numEdges);
+					indexArray[index++] =  j * segments * numEdges + i % (segments * numEdges);
+					indexArray[index++] =  j * segments * numEdges + (i + 1) % (segments * numEdges);
+				}
+			}
+		return indexArray;
+    }
+    
+    public void create_texture() {
+        textureArray = new float[]{
+                0.0f, 1.0f,
+                0.5f, 1.0f,
+                1.0f, 1.0f,
+        };
+    }
+
     // Funktion zum Anpassen der z-Koordinate
     public float[] changeZ(float offset_z, float[] vertex_segment) {
     	for(int i = 2; i < vertex_segment.length; i += 3) {
