@@ -24,10 +24,44 @@ class GUI {
     }
 
     void render() {
+        // reset error
+        glGetError();
 
         int pId = glCreateProgram();
-        glAttachShader(pId, EXAMPLEsimplePrimitives.loadShader("./src/shaders/guivertex.glsl", GL_VERTEX_SHADER));
-        glAttachShader(pId, EXAMPLEsimplePrimitives.loadShader("./src/shaders/guifragment.glsl", GL_FRAGMENT_SHADER));
+
+        // setup shaders
+        // Load the vertex shader
+        int vsId = EXAMPLEsimplePrimitives.loadShader("./src/shaders/guivertex.glsl", GL_VERTEX_SHADER);
+        // Load the fragment shader
+        int fsId = EXAMPLEsimplePrimitives.loadShader("./src/shaders/guifragment.glsl", GL_FRAGMENT_SHADER);
+
+        // Create a new shader program that links both shaders
+        pId = glCreateProgram();
+        glAttachShader(pId, vsId);
+        glAttachShader(pId, fsId);
+
+        glBindAttribLocation(pId, 0, "position");
+        glBindAttribLocation(pId, 1, "texCoord");
+        glBindAttribLocation(pId, 2, "vertexNormal");
+        glBindAttribLocation(pId, 3, "outTexCoord");
+
+        glLinkProgram(pId);
+        glValidateProgram(pId);
+
+        if (glGetError() != GL_NO_ERROR) {
+            //todo: error msg
+            System.out.println("ERROR - Could not create the shaders:");
+            System.exit(-1);
+        }
+
+        glAttachShader(pId, vsId);
+        System.out.println("After attaching shaders: " + glGetError());
+        glAttachShader(pId, fsId);
+        System.out.println("After attaching shaders: " + glGetError());
+
+        System.out.println(glGetShaderInfoLog(vsId));
+        System.out.println(glGetShaderInfoLog(fsId));
+
         glUseProgram(pId);
 
         int matrixLoc = glGetUniformLocation(pId, "projModelMatrix");
@@ -42,12 +76,8 @@ class GUI {
         glUniformMatrix4fv(colorLoc, false, new float[]{.5f, .6f, .1f});
 
         // ========================= gui render
-//        glEnable(GL_TEXTURE_2D);
-//        glDisable(GL_DEPTH_TEST);
-//        glActiveTexture(GL_TEXTURE0);
-//        glBindTexture(GL_TEXTURE_2D, EXAMPLEsimplePrimitives.loadPNGTexture("./assets/gdv.png", GL_TEXTURE0));
-//        EXAMPLEsimplePrimitives.loadPNGTexture("./assets/gdv.png", GL_TEXTURE0);
-        glUniform1i(glGetUniformLocation(pId, "texture_sampler"), 0);
+        glActiveTexture(GL_TEXTURE0);
+//        glBindTexture(GL_TEXTURE_2D, EXAMPLEsimplePrimitives.loadPNGTexture("./assets/gdv_inv.png", GL_TEXTURE0));
 
         // vertex array
         int vaoId = glGenVertexArrays();

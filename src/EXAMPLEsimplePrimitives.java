@@ -77,7 +77,7 @@ public class EXAMPLEsimplePrimitives {
     private boolean useBackfaceCulling = true;
     private int useTexture = GL_TRUE;
     private int useTextureLocation = 0;
-  	
+
     private void run() {
         try {
             init();
@@ -85,17 +85,16 @@ public class EXAMPLEsimplePrimitives {
             setupMatrices();
 
             // initialize each object (extending Renderable) using initObject(object)
-            DummyObject d = new DummyObject();
-            d.render();
-            initObject(d);
+            Kubus tubus = new Kubus();
+            tubus.render();
+            initObject(tubus);
+            loop(tubus);
 
-            loop();
- 
             // Release window and window callbacks
             glfwDestroyWindow(window);
             glfwSetKeyCallback(window, null);
         } catch (Exception e){
-        	e.printStackTrace();
+            e.printStackTrace();
         } finally {
             // Terminate GLFW and release the GLFWerrorfun
             glfwTerminate();
@@ -207,7 +206,7 @@ public class EXAMPLEsimplePrimitives {
         glDisable(GL_CULL_FACE);
 
         // Draw thicker lines
-        GL11.glLineWidth(2);
+        glLineWidth(2);
 
     }
 
@@ -239,6 +238,13 @@ public class EXAMPLEsimplePrimitives {
         shaderID = glCreateShader(type);
         glShaderSource(shaderID, shaderSource);
         glCompileShader(shaderID);
+
+        // error handling
+        if(glGetShaderi(shaderID, GL_COMPILE_STATUS) == 0){
+            System.err.println("Shader compilation failed");
+            System.err.println(glGetShaderInfoLog(shaderID, 1024));
+            System.exit(1);
+        }
 
         return shaderID;
     }
@@ -409,14 +415,22 @@ public class EXAMPLEsimplePrimitives {
 
     }
 
-    private void loop() throws Exception {
+    private void loop(Renderable object) throws Exception {
 
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
         while ( !glfwWindowShouldClose(window) ) {
 
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
+            // =============================== Mechanics =========================================
+
+            try {
+                ((Kubus)object).moveZ(0.004f);
+            } catch(Exception ignored) {}
+            initObject(object);
+
+
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
             // =============================== Update matrices ====================================
 
@@ -470,6 +484,10 @@ public class EXAMPLEsimplePrimitives {
             
             // Poll for window events. The key callback above will only be invoked during this call.
             glfwPollEvents();
+
+            // reset error state
+            glGetError();
+            System.out.println("=========================");
         }
     }
     

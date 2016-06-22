@@ -12,7 +12,7 @@ public class Kubus implements Renderable {
     private int renderDepth = 15;
     private int numEdges = 4;
     private int segments = 2;
-    private float radius = 1f;
+    private float radius = 2f;
     private float z_distance = -0.04f;
 
     private float[] vertexArray;
@@ -96,7 +96,6 @@ public class Kubus implements Renderable {
 		return vertex_segment;
     }
     
-    @Override
     public void moveZ(float offset_z){
     	vertexArray = changeZ(offset_z, vertexArray);
     	if (vertexArray[2] > 0.4f) {
