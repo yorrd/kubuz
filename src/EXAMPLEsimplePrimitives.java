@@ -87,7 +87,7 @@ public class EXAMPLEsimplePrimitives {
             // initialize each object (extending Renderable) using initObject(object)
             Kubus tubus = new Kubus();
             tubus.render();
-            initObject(tubus);
+//            initObject(tubus);
             loop(tubus);
 
             // Release window and window callbacks
@@ -204,9 +204,6 @@ public class EXAMPLEsimplePrimitives {
 
         // Backface culling: Shows, if the triangles are correctly defined
         glDisable(GL_CULL_FACE);
-
-        // Draw thicker lines
-        glLineWidth(2);
 
     }
 
