@@ -70,13 +70,20 @@ public class EXAMPLEsimplePrimitives {
     private Matrix4 modelMatrix = null;
     private Vec3 modelAngle = new Vec3(0,0,0);
     private Vec3 cameraPos = new Vec3(0,0,-1.4);
-    private float deltaRot = 5f;
 
     // toggles & interactions
-    private boolean showMesh = true;
     private boolean useBackfaceCulling = true;
+    private int[] indices;
+    private float[] vertices;
     private int useTexture = GL_TRUE;
     private int useTextureLocation = 0;
+    private FloatBuffer verticesBuffer;
+    private IntBuffer indicesBuffer;
+    private Kubus tubus;
+	private float speed = 0.01f;
+	private int numEdges = 5;
+	private int segments = 4;
+    
 
     private void run() {
         try {
@@ -85,9 +92,9 @@ public class EXAMPLEsimplePrimitives {
             setupMatrices();
 
             // initialize each object (extending Renderable) using initObject(object)
-            Kubus tubus = new Kubus();
+            tubus = new Kubus(segments, numEdges);
             tubus.render();
-//            initObject(tubus);
+            initObject(tubus);
             loop(tubus);
 
             // Release window and window callbacks
@@ -102,7 +109,11 @@ public class EXAMPLEsimplePrimitives {
     }
  
     private void init() {
-    	
+
+    	// first translate, then rotate. Remember the flipped order
+        modelMatrix = new TranslationMatrix(new Vec3(0,0,1));  // translate...
+        modelMatrix = (Matrix4) new RotationMatrix(modelAngle.y, mat.Axis.Y).mul(modelMatrix); // ... and rotate, multiply matrices
+
         // Setup an error callback. The default implementation
         // will print the error message in System.err.
         glfwSetErrorCallback(errorCallback = GLFWErrorCallback.createPrint(System.err));
@@ -120,6 +131,9 @@ public class EXAMPLEsimplePrimitives {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+        // Enable Multisampling
+        glfwWindowHint(GLFW_STENCIL_BITS, 16);
+        glfwWindowHint(GLFW_SAMPLES, 16);
 
         // Create the window
         window = glfwCreateWindow(WIDTH, HEIGHT, "Hello World!", NULL, NULL);
@@ -132,15 +146,10 @@ public class EXAMPLEsimplePrimitives {
             public void invoke(long window, int key, int scancode, int action, int mods) {
             	if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
                     glfwSetWindowShouldClose(window, true); // We will detect this in our rendering loop
-            	if ( key == GLFW_KEY_RIGHT )
-                    modelAngle.y += deltaRot;
-            	if ( key == GLFW_KEY_LEFT )
-                    modelAngle.y -= deltaRot;
-            	if ( key == GLFW_KEY_M && action == GLFW_PRESS ) {
-            		showMesh = !showMesh;
-            		if (showMesh) glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-            		else glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-            	}
+            	if ( key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
+            		((Kubus)tubus).turn(true);
+            	if ( key == GLFW_KEY_LEFT && action == GLFW_PRESS)
+                    tubus.turn(false);
             	if ( key == GLFW_KEY_T && action == GLFW_PRESS ){
             		if (useTexture==1)
             			useTexture=0;
@@ -196,7 +205,7 @@ public class EXAMPLEsimplePrimitives {
         glViewport(0, 0, WIDTH, HEIGHT);
 
         // Set the clear color - gray
-        glClearColor(0.3f, 0.3f, 0.3f, 0.0f);
+        glClearColor(0.8f, 0.2f, 0.2f, 0.5f);
 
         // Switch to wireframe
         glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
@@ -204,6 +213,7 @@ public class EXAMPLEsimplePrimitives {
 
         // Backface culling: Shows, if the triangles are correctly defined
         glDisable(GL_CULL_FACE);
+        
 
     }
 
@@ -211,7 +221,7 @@ public class EXAMPLEsimplePrimitives {
     private void setupMatrices() {
 
     	// Setup projection and view matrix
-    	projectionMatrix = new PerspectiveMatrix(-1,1,-1,1,0.1f,2);
+    	projectionMatrix = new PerspectiveMatrix(-1,1,-1,1,0.1f,2f);
     	viewMatrix = new TranslationMatrix(cameraPos);
     }
 
@@ -342,6 +352,7 @@ public class EXAMPLEsimplePrimitives {
                 GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                 GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, 8f);
 
         return texId;
     }
@@ -352,9 +363,9 @@ public class EXAMPLEsimplePrimitives {
     	// ================================== 1. Define vertices ==================================
 
     	// Vertices, the order is not important.
-		float[] vertices = object.getVertexArray();
+		vertices = object.getVertexArray();
 		// Sending data to OpenGL requires the usage of (flipped) byte buffers
-		FloatBuffer verticesBuffer = BufferUtils.createFloatBuffer(vertices.length);
+		verticesBuffer = BufferUtils.createFloatBuffer(vertices.length);
 		verticesBuffer.put(vertices);
 		verticesBuffer.flip();
 		verticesCount = vertices.length/3;
@@ -368,10 +379,10 @@ public class EXAMPLEsimplePrimitives {
 		// ================================== 2. Define indices for vertices ======================
 
 		// OpenGL expects to draw the first vertices in counter clockwise order by default
-		int[] indices = object.getIndexArray();
+		indices = object.getIndexArray();
 
 		indicesCount = indices.length;
-		IntBuffer indicesBuffer = BufferUtils.createIntBuffer(indicesCount);
+		indicesBuffer = BufferUtils.createIntBuffer(indicesCount);
 		indicesBuffer.put(indices);
 		indicesBuffer.flip();
 
@@ -386,7 +397,7 @@ public class EXAMPLEsimplePrimitives {
 		// A VBO is a collection of Vectors which in this case resemble the location of each vertex.
 		vboId = glGenBuffers();
 		glBindBuffer(GL_ARRAY_BUFFER, vboId);
-		glBufferData(GL_ARRAY_BUFFER, verticesBuffer, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, verticesBuffer, GL_STREAM_DRAW);
 		// Put the VBO in the attributes list at index 0
 		glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
 		// Deselect (bind to 0) the VBO
@@ -403,7 +414,55 @@ public class EXAMPLEsimplePrimitives {
 		// Create a new VBO for the indices and select it (bind) - INDICES
 		vboiId = glGenBuffers();
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboiId);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL_STREAM_DRAW);
+		// Deselect (bind to 0) the VBO
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+        // Deselect (bind to 0) the VAO
+     	glBindVertexArray(0);
+     	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+
+    }
+    
+    private void updateObject(Renderable object) {
+
+    	// ================================== 1. Define vertices ==================================
+
+    	// Vertices, the order is not important.
+		vertices = object.getVertexArray();
+		// Sending data to OpenGL requires the usage of (flipped) byte buffers
+		verticesBuffer.clear();
+		verticesBuffer.put(vertices);
+		verticesBuffer.flip();
+
+		// ================================== 2. Define indices for vertices ======================
+
+		// OpenGL expects to draw the first vertices in counter clockwise order by default
+		indices = object.getIndexArray();
+
+		indicesBuffer.clear();
+		indicesBuffer.put(indices);
+		indicesBuffer.flip();
+
+		// ================================== 3. Make the data accessible =========================
+
+		// Create a new Vertex Array Object in memory and select it (bind)
+		// A VAO can have up to 16 attributes (VBO's) assigned to it by default
+		glBindVertexArray(vaoId);
+
+		// Create a new Vertex Buffer Object (VBO) in memory and select it (bind)
+		// A VBO is a collection of Vectors which in this case resemble the location of each vertex.
+		glBindBuffer(GL_ARRAY_BUFFER, vboId);
+		glBufferData(GL_ARRAY_BUFFER, verticesBuffer, GL_STREAM_DRAW);
+		//glBufferSubData(GL_ARRAY_BUFFER, 0, verticesBuffer);
+		// Deselect (bind to 0) the VBO
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+
+		// Create a new VBO for the indices and select it (bind) - INDICES
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboiId);
+		//glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, indicesBuffer);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL_STREAM_DRAW);
 		// Deselect (bind to 0) the VBO
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
@@ -421,19 +480,17 @@ public class EXAMPLEsimplePrimitives {
 
             // =============================== Mechanics =========================================
 
-            try {
-                ((Kubus)object).moveZ(0.004f);
+        	try {
+                ((Kubus)object).moveZ(speed);
+                ((Kubus)object).progress();
             } catch(Exception ignored) {}
-            initObject(object);
+            updateObject(object);
 
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
             // =============================== Update matrices ====================================
 
-            // first translate, then rotate. Remember the flipped order
-            modelMatrix = new TranslationMatrix(new Vec3(0,0,1));  // translate...
-            modelMatrix = (Matrix4) new RotationMatrix(modelAngle.y, mat.Axis.Y).mul(modelMatrix); // ... and rotate, multiply matrices
 
             // Upload matrices to the uniform variables to shader program 0
             glUseProgram(pId);
@@ -449,12 +506,11 @@ public class EXAMPLEsimplePrimitives {
             // ================================== Draw object =====================================
 
             glUseProgram(pId);
+            //glBindTexture(GL_TEXTURE_2D, textureID);
 
             // Bind to the VAO that has all the information about the vertices
             glBindVertexArray(vaoId);
             glEnableVertexAttribArray(0);
-//            glEnableVertexAttribArray(1); // not sure anymore what these were for, probably normals and stuff
-//            glEnableVertexAttribArray(2); // need to clean up all of this...
             glEnableVertexAttribArray(3); // texture coordinates
 
             // Bind to the index VBO that has all the information about the order of the vertices
@@ -466,15 +522,13 @@ public class EXAMPLEsimplePrimitives {
             // Put everything back to default (deselect)
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
             glDisableVertexAttribArray(0);
-//            glDisableVertexAttribArray(1);
-//            glDisableVertexAttribArray(2);
             glDisableVertexAttribArray(3);
             glBindVertexArray(0);
             glUseProgram(0);
 
             // ================================== Draw GUI =====================================
 
-            GUI.getInstance().render();
+            //GUI.getInstance().render();
 
             // Swap the color buffer. We never draw directly to the screen, only in this buffer. So we need to display it
     		glfwSwapBuffers(window);
@@ -484,7 +538,7 @@ public class EXAMPLEsimplePrimitives {
 
             // reset error state
             glGetError();
-            System.out.println("=========================");
+            //System.out.println("=========================");
         }
     }
     
