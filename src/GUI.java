@@ -15,20 +15,34 @@ import static org.lwjgl.opengl.GL30.*;
 class GUI {
 
     private static GUI instance;
+    private int pId;
+    private int vsId;
+    private int fsId;
+    private int textureID;
+    private int vaoId;
+    private int vboId;
+    private int tboId;
+    private int iboId;
+    private FloatBuffer vertexBuffer;
+    private FloatBuffer textureBuffer;
+    private IntBuffer indexBuffer;
 
     static GUI getInstance() {
         if(instance == null) {
             instance = new GUI();
+            instance.init();
         }
         return instance;
     }
-
-    void render() {
-        int pId = glCreateProgram();
+    
+    // deine texture-id wurde bei jedem Frame neu erstellt ^.^ 
+    // und du hast deine vertices in deinen texture buffer geschrieben
+    void init() {
+        pId = glCreateProgram();
 
         // setup shaders
-        int vsId = EXAMPLEsimplePrimitives.loadShader("./src/shaders/guivertex.glsl", GL_VERTEX_SHADER);
-        int fsId = EXAMPLEsimplePrimitives.loadShader("./src/shaders/guifragment.glsl", GL_FRAGMENT_SHADER);
+        vsId = EXAMPLEsimplePrimitives.loadShader("./src/shaders/guivertex.glsl", GL_VERTEX_SHADER);
+        fsId = EXAMPLEsimplePrimitives.loadShader("./src/shaders/guifragment.glsl", GL_FRAGMENT_SHADER);
 
         glAttachShader(pId, vsId);
         glAttachShader(pId, fsId);
@@ -42,22 +56,32 @@ class GUI {
             System.out.println("ERROR - Could not create the shaders: " + errorCode);
             System.exit(-1);
         }
+        
+        textureID = EXAMPLEsimplePrimitives.loadPNGTexture("./assets/gdv_inv.png", GL_TEXTURE0);
+
+        vaoId = glGenVertexArrays();
+        vboId = glGenBuffers();
+        tboId = glGenBuffers();
+        iboId = glGenBuffers();
+        vertexBuffer = BufferUtils.createFloatBuffer(4 * 3);
+        textureBuffer = BufferUtils.createFloatBuffer(4 * 2);
+        indexBuffer = BufferUtils.createIntBuffer(6);
+
+    	
+    }
+    
+    void render() {
+
 
         glUseProgram(pId);
 
         // ========================= gui render
-//        glActiveTexture(GL_TEXTURE0);
-//        glBindTexture(GL_TEXTURE_2D, EXAMPLEsimplePrimitives.loadPNGTexture("./assets/gdv_inv.png", GL_TEXTURE0));
-        glEnable(GL_TEXTURE_2D);
-        int textureID = EXAMPLEsimplePrimitives.loadPNGTexture("./assets/gdv_inv.png", GL_TEXTURE0);
 
         // vertex array
-        int vaoId = glGenVertexArrays();
         glBindVertexArray(vaoId);
 
         // first attribute, vertex positions
-        int vboId = glGenBuffers();
-        FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(4 * 3);
+        vertexBuffer.clear();
         vertexBuffer.put(new float[] {
                 0, 0, 1,  // left bottom
                 .5f, 0, 1,  // right bottom
@@ -70,26 +94,25 @@ class GUI {
         glEnableVertexAttribArray(0);
 
         // second attribute, textures
-        vboId = glGenBuffers();
-        FloatBuffer textureBuffer = BufferUtils.createFloatBuffer(4 * 2);
-        vertexBuffer.put(new float[] {
+        textureBuffer.clear();
+        textureBuffer.put(new float[] {
                 0f, 0f,
                 1f, 0f,
                 1f, 1f,
                 0f, 1f
         }).flip();
-        glBindBuffer(GL_ARRAY_BUFFER, vboId);
+        glBindBuffer(GL_ARRAY_BUFFER, tboId);
         glBufferData(GL_ARRAY_BUFFER, textureBuffer, GL_STATIC_DRAW);
         glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
         glEnableVertexAttribArray(1);
 
         // indices
-        vboId = glGenBuffers();
-        IntBuffer indexBuffer = BufferUtils.createIntBuffer(6);
+        indexBuffer.clear();
         indexBuffer.put(new int[]{0, 1, 2, 0, 2, 3}).flip();
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboId);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBuffer, GL_STATIC_DRAW);
 
+        glBindTexture(GL_TEXTURE_2D, textureID);
         // actually draw
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);  // index buffer length = 6
 
@@ -99,6 +122,5 @@ class GUI {
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
         glBindVertexArray(0);
-        glBindTexture(GL_TEXTURE_2D, 0);
     }
 }
