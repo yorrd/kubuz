@@ -353,7 +353,6 @@ public class EXAMPLEsimplePrimitives {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                 GL_LINEAR_MIPMAP_LINEAR);
         glTexParameterf(GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, 8f);
-
         return texId;
     }
 
@@ -506,7 +505,7 @@ public class EXAMPLEsimplePrimitives {
             // ================================== Draw object =====================================
 
             glUseProgram(pId);
-            //glBindTexture(GL_TEXTURE_2D, textureID);
+            glBindTexture(GL_TEXTURE_2D, textureID);
 
             // Bind to the VAO that has all the information about the vertices
             glBindVertexArray(vaoId);
@@ -528,7 +527,7 @@ public class EXAMPLEsimplePrimitives {
 
             // ================================== Draw GUI =====================================
 
-            //GUI.getInstance().render();
+            GUI.getInstance().render();
 
             // Swap the color buffer. We never draw directly to the screen, only in this buffer. So we need to display it
     		glfwSwapBuffers(window);
