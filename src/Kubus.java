@@ -7,7 +7,7 @@
 
 
 
-public class Kubus implements Renderable {
+public class Kubus extends Renderable {
 
     private int renderDepth = 15;
     private int numEdges;
@@ -17,35 +17,34 @@ public class Kubus implements Renderable {
     private int rotation = 0;
     private int position = 0;
 
-    private float[] vertexArray;
-    private float[] textureArray;
-    private int[] indexArray;
 	private boolean[][] curr_level;
     private Level stage;
     
 	
 	// Constructor
-	public Kubus(int segments, int numEdges){
+	public Kubus(int segments, int numEdges, String textureFile){
+		this.textureFile = textureFile;
 		this.segments = segments;
 		this.numEdges = numEdges;
     	indexArray = new int[6  * (numEdges * segments + 1) * renderDepth];
     	vertexArray = new float[3  * numEdges * segments * renderDepth];
     	stage = new Level(segments, numEdges);
     	curr_level = stage.get_level();
+		createGeometry();
+		init();
 	}
 	
 	
 	// rename to create geometry
-	@Override
-	public void render() {
-		create_initial();
-		create_index();
-		create_texture();
+	public void createGeometry() {
+		create_vertexArray();
+		create_indexArray();
+		create_textureArray();
 		
 	}
 	
 	// creates one segment, moves it in the right z position and copies it into vertexArray
-    public void create_initial() {
+    public void create_vertexArray() {
        	float[] segmentArray = new float[3  * numEdges * segments];
     	segmentArray = create_segment(0f);
        	int index_vertex = 0;
@@ -63,7 +62,7 @@ public class Kubus implements Renderable {
     	float[] vertex_segment = new float[3  * numEdges * segments];
     	float angle = 2 * (float) Math.PI / numEdges;
     	int index = 0;
-    	// creates first point in right position, 270Â° + half angle
+    	// creates first point in right position, 270° + half angle
         for(int edge = 0; edge < numEdges; edge ++) {
         	vertex_segment[index++] = (float) (radius * Math.cos(1.5f * Math.PI + angle / 2 - angle * edge));
         	vertex_segment[index++] = (float) (radius * Math.sin(1.5f * Math.PI + angle / 2 - angle * edge));
@@ -83,7 +82,7 @@ public class Kubus implements Renderable {
     }
     
     // creates indexArray
-    public void create_index() {
+    public void create_indexArray() {
 		int index = 0;
 		for (int j = 0; j < renderDepth - 1; j++){
 			for (int i = 0; i < (segments * numEdges + 1); i++){
@@ -99,7 +98,7 @@ public class Kubus implements Renderable {
     }
     
     // creates textureArray, textures are mirrored in x-y direction
-    public void create_texture() {
+    public void create_textureArray() {
     	int index = 0;
         textureArray = new float[2  * numEdges * segments * renderDepth];
     	for(int i = 0; i < renderDepth; i ++) {
@@ -123,7 +122,7 @@ public class Kubus implements Renderable {
     public void moveZ(float offset_z) {
     	if (vertexArray[2] > 0.5f) {
         	position++;
-        	create_index();
+        	create_indexArray();
         	vertexArray = changeZ(z_distance + offset_z, vertexArray);
         }
     	else {
@@ -142,7 +141,7 @@ public class Kubus implements Renderable {
     		rotation = rotation % (segments * numEdges);
     	}
     	if (rotation < 0) rotation += segments * numEdges;
-		create_index();
+		create_indexArray();
     }
     
     // checks lvl progress
@@ -152,25 +151,5 @@ public class Kubus implements Renderable {
         	stage.next_level();
         	curr_level = stage.get_level();
     	}
-    }
-
-    @Override
-    public float[] getVertexArray() {
-        return vertexArray;
-    }
-
-    @Override
-    public float[] getTextureArray() {
-        return textureArray;
-    }
-
-    @Override
-    public int[] getIndexArray() {
-        return indexArray;
-    }
-
-    @Override
-    public String getTextureFilename() {
-        return "./assets/gdv.png";
     }
 }
