@@ -1,11 +1,11 @@
 
 class Bug extends Renderable{
 
-	private float ground = -0.5f; // the level where the bug walks on
+	private float ground = -1.5f; // the level where the bug walks on
 	private float overGround = 0.02f;
-	private float bodySize = 5f;
+	private float bodySize = 1f;
 	private float pos_x = 0f; // bug must be able to move x-way
-	private float pos_z = -0.4f; // z-position
+	private float pos_z = 0.2f; // z-position
 	private float z_size = -0.01f;
 	
 	// Constructor
@@ -20,17 +20,18 @@ class Bug extends Renderable{
     	float[] tempArray;
     	int index = 0;
     	for(int j = 0; j < 3; j++) {
-    		tempArray = createLeg(0.025f, z_size);
+    		tempArray = createLeg(bodySize, z_size);
 	    	for(int i = 0; i < 9; i++) {
 	    		vertexArray[index++] = tempArray[i]; 
 	    	}
-    		tempArray = createLeg(-0.025f, z_size);
+    		tempArray = createLeg(-bodySize, z_size);
 	    	for(int i = 0; i < 9; i++) {
 	    		vertexArray[index++] = tempArray[i]; 
 	    	}
 	    	z_size += 0.01f;
     	}
     	tempArray = createBody(bodySize);
+    	System.out.println(index);    	
     	for(int i = 0; i < 18; i++) {
     		vertexArray[index++] = tempArray[i]; 
     	}
@@ -38,8 +39,8 @@ class Bug extends Renderable{
     	index = 0;
     	textureArray = new float[vertexArray.length];
     	for(int i = 0; i < vertexArray.length / 3; i++) {
-    		textureArray[index++] = 0f; 
-    		textureArray[index++] = 0f; 
+    		textureArray[index++] = index; 
+    		textureArray[index++] = index; 
     	}
     	// indexArray
     	indexArray = new int[6 * 6 + 8 * 3];
@@ -47,21 +48,18 @@ class Bug extends Renderable{
     	index = 0;
     	for(int i = 0; i < 6 * 2; i++) {
     		indexArray[index++] = temp++; 
-    		indexArray[index++] = temp; 
-    		indexArray[index++] = temp; 
+    		indexArray[index++] = temp++; 
+    		indexArray[index++] = temp++; 
     	}
     	for(int i = 0; i < 4; i++) {
-    		indexArray[index++] = 19; 
-    		indexArray[index++] = 20 + (1 + i) % 4; 
-    		indexArray[index++] = 20 + (0 + i) % 4; 
+    		indexArray[index++] = 18; 
+    		indexArray[index++] = 19 + (1 + i) % 4; 
+    		indexArray[index++] = 19 + (0 + i) % 4; 
     	}
     	for(int i = 0; i < 4; i++) {
-    		indexArray[index++] = 24; 
-    		indexArray[index++] = 20 + (0 + i) % 4;
-    		indexArray[index++] = 20 + (1 + i) % 4;  
-    	}
-    	for(int i = 0; i < indexArray.length; i++) {
-        	System.out.println(vertexArray[i]);    		
+    		indexArray[index++] = 23; 
+    		indexArray[index++] = 19 + (0 + i) % 4;
+    		indexArray[index++] = 19 + (1 + i) % 4;  
     	}
     }
     
@@ -84,7 +82,7 @@ class Bug extends Renderable{
     	float[] bodyArray = new float[18];
     	int index = 0;
     	bodyArray[index++] = pos_x;
-    	bodyArray[index++] = overGround;
+    	bodyArray[index++] = ground + overGround;
     	bodyArray[index++] = pos_z;
 		bodyArray[index++] = pos_x - offset_x * 1 / 3;
 		bodyArray[index++] = ground + overGround + bodySize;
@@ -99,7 +97,7 @@ class Bug extends Renderable{
 		bodyArray[index++] = ground + overGround + bodySize;
 		bodyArray[index++] = pos_z - offset_x * 1 / 3;
     	bodyArray[index++] = pos_x;
-    	bodyArray[index++] = overGround + 2 * bodySize;
+    	bodyArray[index++] = ground + overGround + 2 * bodySize;
     	bodyArray[index++] = pos_z;
     	
 		return bodyArray;
