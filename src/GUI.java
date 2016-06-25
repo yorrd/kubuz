@@ -24,10 +24,10 @@ public class GUI extends Renderable{
 
         // second attribute, textures
         textureArray = new float[] {
+                0f, 1f,
+                1f, 1f,
                 0f, 0f,
                 1f, 0f,
-                0f, 1f,
-                1f, 1f
         };
 
         indexArray = new int[]{0, 1, 2, 2, 1, 3};

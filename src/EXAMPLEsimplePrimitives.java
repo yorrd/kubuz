@@ -35,6 +35,7 @@ public class EXAMPLEsimplePrimitives {
     private Kubus lubus;
     private Bug guy;
     private GUI gui;
+    private Renderable backdrop;
 	private float speed = 0.01f;
 	private int numEdges = 5;
 	private int segments = 4;
@@ -50,6 +51,32 @@ public class EXAMPLEsimplePrimitives {
             tubus = new Kubus(segments, numEdges, "gdv.png");
             gui = new GUI("gdv_inv.png");
             guy = new Bug("gdv.png");
+            backdrop = new Renderable() {
+
+                @Override
+                public void init() {
+                    textureFile = "stars.png";
+                    createGeometry();
+                    super.init();
+                }
+
+                private void createGeometry() {
+                    vertexArray = new float[] {
+                            -1f, 1f, 2,
+                            1f, 1f, 2,
+                            1f, -1f, 2,
+                            -1f, -1f, 2,
+                    };
+                    textureArray = new float[] {
+                            -1f, 1f,
+                            1f, 1f,
+                            1f, -1f,
+                            -1f, -1f,
+                    };
+                    indexArray = new int[] {0, 3, 1, 1, 3, 2};
+                }
+            };
+            backdrop.init();
             loop();
 
             // Release window and window callbacks
@@ -145,7 +172,7 @@ public class EXAMPLEsimplePrimitives {
         glViewport(0, 0, WIDTH, HEIGHT);
 
         // Set the clear color - gray
-        glClearColor(0.8f, 0.2f, 0.2f, 0.5f);
+        glClearColor(0.2f, 0.2f, 0.2f, 0.5f);
 
         // Switch to wireframe
         glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
@@ -167,10 +194,8 @@ public class EXAMPLEsimplePrimitives {
 
             // =============================== Mechanics =========================================
 
-        	try {
-                tubus.moveZ(speed);
-                tubus.progress();
-            } catch(Exception ignored) {}
+            tubus.moveZ(speed);
+            tubus.progress();
         	
         	// wenn du vsync ausmachst hab ich 4000 fps und die bewegung ist seeehr schnell :>
             if (fps_counter == 0) {
@@ -189,7 +214,8 @@ public class EXAMPLEsimplePrimitives {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
             // ================================== Draw object =====================================
-       
+
+            backdrop.render();
             tubus.render();
             //guy.render(); geht nicht =(
             gui.render();
