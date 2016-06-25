@@ -3,7 +3,7 @@ class Bug extends Renderable{
 
 	private float ground = -0.5f; // the level where the bug walks on
 	private float overGround = 0.02f;
-	private float bodySize = 0.05f;
+	private float bodySize = 5f;
 	private float pos_x = 0f; // bug must be able to move x-way
 	private float pos_z = -0.4f; // z-position
 	private float z_size = -0.01f;
@@ -48,17 +48,20 @@ class Bug extends Renderable{
     	for(int i = 0; i < 6 * 2; i++) {
     		indexArray[index++] = temp++; 
     		indexArray[index++] = temp; 
-    		indexArray[index++] = temp++; 
+    		indexArray[index++] = temp; 
     	}
     	for(int i = 0; i < 4; i++) {
-    		indexArray[index++] = 36; 
-    		indexArray[index++] = 37 + (1 + i) % 4; 
-    		indexArray[index++] = 37 + (0 + i) % 4; 
+    		indexArray[index++] = 19; 
+    		indexArray[index++] = 20 + (1 + i) % 4; 
+    		indexArray[index++] = 20 + (0 + i) % 4; 
     	}
     	for(int i = 0; i < 4; i++) {
-    		indexArray[index++] = 41; 
-    		indexArray[index++] = 37 + (0 + i) % 4;
-    		indexArray[index++] = 37 + (1 + i) % 4;  
+    		indexArray[index++] = 24; 
+    		indexArray[index++] = 20 + (0 + i) % 4;
+    		indexArray[index++] = 20 + (1 + i) % 4;  
+    	}
+    	for(int i = 0; i < indexArray.length; i++) {
+        	System.out.println(vertexArray[i]);    		
     	}
     }
     
