@@ -19,34 +19,32 @@ public class Kubus extends Renderable {
 
 	private boolean[][] curr_level;
     private Level stage;
-    
 	
 	// Constructor
-	public Kubus(int segments, int numEdges, String textureFile){
-		this.textureFile = textureFile;
+	public Kubus(int segments, int numEdges){
+        textureFile = "gdv.png";
+
 		this.segments = segments;
 		this.numEdges = numEdges;
-    	indexArray = new int[6  * (numEdges * segments + 1) * renderDepth];
-    	vertexArray = new float[3  * numEdges * segments * renderDepth];
     	stage = new Level(segments, numEdges);
     	curr_level = stage.get_level();
-		createGeometry();
-		init();
+        init();
 	}
 	
 	
 	// rename to create geometry
+	@Override
 	public void createGeometry() {
-		create_vertexArray();
-		create_indexArray();
-		create_textureArray();
-		
+		createVertexArray();
+		createIndexArray();
+		createTextureArray();
 	}
 	
 	// creates one segment, moves it in the right z position and copies it into vertexArray
-    public void create_vertexArray() {
-       	float[] segmentArray = new float[3  * numEdges * segments];
-    	segmentArray = create_segment(0f);
+    private void createVertexArray() {
+        vertexArray = new float[3  * numEdges * segments * renderDepth];
+       	float[] segmentArray;
+    	segmentArray = createSegment(0f);
        	int index_vertex = 0;
         for(int i = 0; i < renderDepth; i ++) {
         	segmentArray = changeZ(z_distance, segmentArray); 
@@ -57,7 +55,7 @@ public class Kubus extends Renderable {
     }
 
     // creating one segment
-    public float[] create_segment(float offset_z) {
+    private float[] createSegment(float offset_z) {
     	float[] step = new float[2];
     	float[] vertex_segment = new float[3  * numEdges * segments];
     	float angle = 2 * (float) Math.PI / numEdges;
@@ -82,7 +80,8 @@ public class Kubus extends Renderable {
     }
     
     // creates indexArray
-    public void create_indexArray() {
+    private void createIndexArray() {
+        indexArray = new int[6  * (numEdges * segments + 1) * renderDepth];
 		int index = 0;
 		for (int j = 0; j < renderDepth - 1; j++){
 			for (int i = 0; i < (segments * numEdges + 1); i++){
@@ -98,7 +97,7 @@ public class Kubus extends Renderable {
     }
     
     // creates textureArray, textures are mirrored in x-y direction
-    public void create_textureArray() {
+    private void createTextureArray() {
     	int index = 0;
         textureArray = new float[2  * numEdges * segments * renderDepth];
     	for(int i = 0; i < renderDepth; i ++) {
@@ -111,7 +110,7 @@ public class Kubus extends Renderable {
     }
 
     // adds z offset to an object
-    public float[] changeZ(float offset_z, float[] vertex_segment) {
+    private float[] changeZ(float offset_z, float[] vertex_segment) {
     	for(int i = 2; i < vertex_segment.length; i += 3) {
     		vertex_segment[i] += offset_z;
     	}
@@ -119,10 +118,10 @@ public class Kubus extends Renderable {
     }
     
     // moves the whole tubus in z-direction
-    public void moveZ(float offset_z) {
+    void moveZ(float offset_z) {
     	if (vertexArray[2] > 0.5f) {
         	position++;
-        	create_indexArray();
+        	createIndexArray();
         	vertexArray = changeZ(z_distance + offset_z, vertexArray);
         }
     	else {
@@ -131,7 +130,7 @@ public class Kubus extends Renderable {
     }
     
     // turns the indices, not the vertices
-    public void turn(boolean direction){
+    void turn(boolean direction){
     	if (direction){ // linksdrehung bei true
     		rotation += segments;
     		rotation = rotation % (segments * numEdges);
@@ -141,11 +140,11 @@ public class Kubus extends Renderable {
     		rotation = rotation % (segments * numEdges);
     	}
     	if (rotation < 0) rotation += segments * numEdges;
-		create_indexArray();
+		createIndexArray();
     }
     
     // checks lvl progress
-    public void progress() {
+    void progress() {
     	if (position == 50 + renderDepth){ 
     		position = 0;
         	stage.next_level();

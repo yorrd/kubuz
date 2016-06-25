@@ -22,7 +22,7 @@ import mat.RotationMatrix;
 import mat.TranslationMatrix;
 import mat.Vec3;
 
-public class Renderable {
+abstract class Renderable {
 	
     protected float[] vertexArray;
     protected float[] textureArray;
@@ -50,10 +50,14 @@ public class Renderable {
     private Matrix4 projectionMatrix = null;
     private Matrix4 viewMatrix = null;
     private Matrix4 modelMatrix = null;
-    
-    
+
+
+    public abstract void createGeometry();
+
+    // constructor MUST call init
     public void init() {
     	textureID = loadPNGTexture("./assets/" + textureFile, GL_TEXTURE0);
+        createGeometry();
     	initBuffers();
     	setupShader();
     	setupMatrices();
@@ -86,7 +90,7 @@ public class Renderable {
      	
     }
    
-    protected void updateBuffers() {    
+    private void updateBuffers() {
     	vertexBuffer.clear();
     	vertexBuffer.put(vertexArray);
     	vertexBuffer.flip();
@@ -110,7 +114,7 @@ public class Renderable {
     }
     
     
-    public void render() {
+    void render() {
     	updateBuffers();
     	
     	
@@ -146,7 +150,7 @@ public class Renderable {
     }
     
     
-    protected void setupShader() {
+    private void setupShader() {
         pId = glCreateProgram();
 
         // setup shaders
@@ -179,7 +183,7 @@ public class Renderable {
     }
     
     // loadshader from example
-    public static int loadShader(String filename, int type) {
+    private static int loadShader(String filename, int type) {
         StringBuilder shaderSource = new StringBuilder();
         int shaderID = 0;
 
@@ -211,7 +215,7 @@ public class Renderable {
     }
 
     // toFFB from example
-	protected static FloatBuffer toFFB(Matrix4 m){
+	private static FloatBuffer toFFB(Matrix4 m){
 		FloatBuffer res = BufferUtils.createFloatBuffer(16);
 		for (int i=0;i<4;i++){
 			for (int j=0;j<4;j++){
@@ -233,7 +237,7 @@ public class Renderable {
     }
     
     // loadPNGTexture from example
-    static int loadPNGTexture(String filename, int textureUnit) {
+    private static int loadPNGTexture(String filename, int textureUnit) {
         ByteBuffer buf = null;
         int tWidth = 0;
         int tHeight = 0;

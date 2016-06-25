@@ -1,19 +1,18 @@
 
 
 
-public class GUI extends Renderable{
+class GUI extends Renderable{
 
 
-	public GUI(String textureFile) {
-		this.textureFile = textureFile;
-		createGeometry();
+	GUI() {
+		this.textureFile = "gdv_inv.png";
 		shaderVFile = "guivertex.glsl";
 		shaderFFile = "guifragment.glsl";
 		init();
 	}
 
-    
-    private void createGeometry() {
+    @Override
+    public void createGeometry() {
 
         vertexArray = new float[] {
                 0, 0, 1,  // left bottom

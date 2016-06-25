@@ -1,5 +1,5 @@
 
-public class Bug extends Renderable{
+class Bug extends Renderable{
 
 	private float ground = -0.5f; // the level where the bug walks on
 	private float overGround = 0.02f;
@@ -9,16 +9,15 @@ public class Bug extends Renderable{
 	private float z_size = -0.01f;
 	
 	// Constructor
-	public Bug(String textureFile){
-		this.textureFile = textureFile;
-		createGeometry();
+	Bug(){
+		this.textureFile = "gdv.png";
 		init();
 	}
 	
-    private void createGeometry() {
+    public void createGeometry() {
     	// vertexArray
     	vertexArray = new float[6 * 9 + 6 * 3];
-    	float[] tempArray = new float[18];
+    	float[] tempArray;
     	int index = 0;
     	for(int j = 0; j < 3; j++) {
     		tempArray = createLeg(0.025f, z_size);

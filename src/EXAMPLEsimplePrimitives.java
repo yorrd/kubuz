@@ -28,8 +28,8 @@ public class EXAMPLEsimplePrimitives {
     private long window;
     
     // Window size
-    static int WIDTH = 800;
-    static int HEIGHT = 640;
+    private static int WIDTH = 800;
+    private static int HEIGHT = 640;
     
     private Kubus tubus;
     private Kubus lubus;
@@ -48,34 +48,10 @@ public class EXAMPLEsimplePrimitives {
             init();
 
             // initialize each object (extending Renderable) using initObject(object)
-            tubus = new Kubus(segments, numEdges, "gdv.png");
-            gui = new GUI("gdv_inv.png");
-            guy = new Bug("gdv.png");
-            backdrop = new Renderable() {
-
-                @Override
-                public void init() {
-                    textureFile = "stars.png";
-                    createGeometry();
-                    super.init();
-                }
-
-                private void createGeometry() {
-                    vertexArray = new float[] {
-                            -1f, 1f, 2,
-                            1f, 1f, 2,
-                            1f, -1f, 2,
-                            -1f, -1f, 2,
-                    };
-                    textureArray = new float[] {
-                            -1f, 1f,
-                            1f, 1f,
-                            1f, -1f,
-                            -1f, -1f,
-                    };
-                    indexArray = new int[] {0, 3, 1, 1, 3, 2};
-                }
-            };
+            tubus = new Kubus(segments, numEdges);
+            gui = new GUI();
+            guy = new Bug();
+            backdrop = new Backdrop();
             backdrop.init();
             loop();
 
