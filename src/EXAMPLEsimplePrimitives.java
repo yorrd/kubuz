@@ -148,7 +148,7 @@ public class EXAMPLEsimplePrimitives {
         glViewport(0, 0, WIDTH, HEIGHT);
 
         // Set the clear color - gray
-        glClearColor(0.2f, 0.2f, 0.2f, 0.5f);
+        glClearColor(0.8f, 0.8f, 0.8f, 0.8f);
 
         // Switch to wireframe
         glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
@@ -191,10 +191,10 @@ public class EXAMPLEsimplePrimitives {
 
             // ================================== Draw object =====================================
 
-            backdrop.render();
-            tubus.render();
-            //guy.render(); geht nicht =(
-            gui.render();
+            //backdrop.render();
+            //tubus.render();
+            guy.render();
+            //gui.render();
 
             // Swap the color buffer. We never draw directly to the screen, only in this buffer. So we need to display it
     		glfwSwapBuffers(window);
