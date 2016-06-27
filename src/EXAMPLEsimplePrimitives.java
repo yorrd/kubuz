@@ -179,40 +179,38 @@ public class EXAMPLEsimplePrimitives {
 
 
             if (paused) {
-                // if it's paused, draw the pause screen and keep the rest still
-
-                backdrop.render();
-                gui.render();
+                // dont update mechanics
             } else {
                 // =============================== Mechanics =========================================
 
                 tubus.moveZ(speed);
                 tubus.progress();
-
-                // wenn du vsync ausmachst hab ich 4000 fps und die bewegung ist seeehr schnell :>
-                if (fps_counter == 0) {
-                    time = System.currentTimeMillis();
-                    fps_counter++;
-                }
-                else if (fps_counter == 100){
-                    System.out.println("FPS: " + 100000 / (System.currentTimeMillis() - time));
-                    time = System.currentTimeMillis();
-                    fps_counter = 0;
-                }
-                else {
-                    fps_counter++;
-                }
-
-                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
-
-                // ================================== Draw object =====================================
-
-                backdrop.render();
-                glEnable(GL_DEPTH_TEST);
-                tubus.render();
-                guy.render();
-                glDisable(GL_DEPTH_TEST);
             }
+            
+            // wenn du vsync ausmachst hab ich 4000 fps und die bewegung ist seeehr schnell :>
+            if (fps_counter == 0) {
+                time = System.currentTimeMillis();
+                fps_counter++;
+            }
+            else if (fps_counter == 100){
+                System.out.println("FPS: " + 100000 / (System.currentTimeMillis() - time));
+                time = System.currentTimeMillis();
+                fps_counter = 0;
+            }
+            else {
+                fps_counter++;
+            }
+            
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
+
+            // ================================== Draw object =====================================
+
+            backdrop.render();
+            glEnable(GL_DEPTH_TEST);
+            tubus.render();
+            guy.render();
+            glDisable(GL_DEPTH_TEST);
+            gui.render();
 
             // Swap the color buffer. We never draw directly to the screen, only in this buffer. So we need to display it
     		glfwSwapBuffers(window);
