@@ -18,7 +18,7 @@ class Bug extends Renderable{
 	
 	// Constructor
 	Bug(){
-		this.textureFile = "gdv.png";
+		this.textureFile = "leg.png";
 		init();
 	}
 	
@@ -31,12 +31,6 @@ class Bug extends Renderable{
     	for(int i = 0; i < 18; i++) {
     		vertexArray[index++] = body[i]; 
     	}
-		System.out.println("Body");
-    	for(int i = 0; i < 18; i++) {
-    		System.out.println("x:" + vertexArray[i++]);
-    		System.out.println("y:" + vertexArray[i++]);
-    		System.out.println("z:" + vertexArray[i]);
-    	}
     	for(int j = 0; j < 3; j++) {
     		tempArray = createLeg(0.25f, zPos);
 	    	for(int i = 0; i < 9; i++) {
@@ -48,25 +42,23 @@ class Bug extends Renderable{
 	    	}
 	    	zPos -= 0.25f;
     	}
-		System.out.println("Legs");
-    	for(int i = 18; i < vertexArray.length; i++) {
-    		System.out.println("x:" + vertexArray[i++]);
-    		System.out.println("y:" + vertexArray[i++]);
-    		System.out.println("z:" + vertexArray[i]);
-    	}
     	// texture Array
     	index = 0;
     	textureArray = new float[2 * vertexArray.length];
     	for(int i = 0; i < 6; i++) {
-    		textureArray[index++] = 0.1f; 
-    		textureArray[index++] = 0.1f;
+    		textureArray[index++] = 0f; 
+    		textureArray[index++] = 0f;
     	}
-    	for(int i = 6; i < vertexArray.length; i++) {
+    	for(int i = 6; i < vertexArray.length; i += 3) {
     		textureArray[index++] = 0f; 
     		textureArray[index++] = 0f; 
+    		textureArray[index++] = 1f; 
+    		textureArray[index++] = 0f; 
+    		textureArray[index++] = 1f; 
+    		textureArray[index++] = 1f; 
     	}
     	// indexArray
-    	indexArray = new int[24 + 36];
+    	indexArray = new int[24 + 18];
     	index = 0;
     	for(int i = 0; i < 4; i++) {
     		indexArray[index++] = 0; 
@@ -82,17 +74,8 @@ class Bug extends Renderable{
     		indexArray[index++] = 6 + i * 3; 
     		indexArray[index++] = 7 + i * 3; 
     		indexArray[index++] = 8 + i * 3; 
-    		indexArray[index++] = 7 + i * 3; 
-    		indexArray[index++] = 7 + i * 3; 
-    		indexArray[index++] = 8 + i * 3; 
     	}
     	vertexArray = changeZ(-0.1f, vertexArray);
-		System.out.println("TriangleList");
-    	for(int i = 0; i < indexArray.length; i++) {
-    		System.out.println(i + " : " + indexArray[i++]);
-    		System.out.println(i + " : " + indexArray[i++]);
-    		System.out.println(i + " : " + indexArray[i]);
-    	}
     }
     
     private float[] createLeg(float offset_x, float offset_z) {
