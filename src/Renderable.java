@@ -79,9 +79,7 @@ abstract class Renderable {
 		glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		
-        textureBuffer.put(textureArray).flip();
         glBindBuffer(GL_ARRAY_BUFFER, tboId);
-        glBufferData(GL_ARRAY_BUFFER, textureBuffer, GL_STATIC_DRAW);
         glVertexAttribPointer(1, 2, GL_FLOAT, true, 0, 0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         
@@ -94,6 +92,10 @@ abstract class Renderable {
     	vertexBuffer.clear();
     	vertexBuffer.put(vertexArray);
     	vertexBuffer.flip();
+
+        textureBuffer.clear();
+        textureBuffer.put(textureArray);
+        textureBuffer.flip();
     	
     	indexBuffer.clear();
     	indexBuffer.put(indexArray);
@@ -104,6 +106,11 @@ abstract class Renderable {
 		glBindBuffer(GL_ARRAY_BUFFER, vboId);
 		glBufferData(GL_ARRAY_BUFFER, vertexBuffer, GL_STREAM_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        glBindBuffer(GL_ARRAY_BUFFER, tboId);
+        glBufferData(GL_ARRAY_BUFFER, textureBuffer, GL_STATIC_DRAW);
+        glVertexAttribPointer(1, 2, GL_FLOAT, true, 0, 0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBuffer, GL_STREAM_DRAW);

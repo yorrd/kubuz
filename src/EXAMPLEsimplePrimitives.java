@@ -29,7 +29,7 @@ public class EXAMPLEsimplePrimitives {
     
     // Window size
     private static int WIDTH = 800;
-    private static int HEIGHT = 640;
+    private static int HEIGHT = 800;
     
     private Kubus tubus;
     private Kubus lubus;
@@ -191,10 +191,12 @@ public class EXAMPLEsimplePrimitives {
 
             // ================================== Draw object =====================================
 
-            //backdrop.render();
-            //tubus.render();
+            backdrop.render();
+            tubus.render();
             guy.render();
-            //gui.render();
+            gui.render();
+
+            gui.reduceLife();
 
             // Swap the color buffer. We never draw directly to the screen, only in this buffer. So we need to display it
     		glfwSwapBuffers(window);
