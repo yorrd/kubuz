@@ -181,6 +181,8 @@ public class EXAMPLEsimplePrimitives {
             if (paused) {
                 // if it's paused, draw the pause screen and keep the rest still
 
+                backdrop.render();
+                gui.render();
             } else {
                 // =============================== Mechanics =========================================
 
@@ -211,8 +213,6 @@ public class EXAMPLEsimplePrimitives {
                 guy.render();
                 glDisable(GL_DEPTH_TEST);
             }
-
-            gui.render();
 
             // Swap the color buffer. We never draw directly to the screen, only in this buffer. So we need to display it
     		glfwSwapBuffers(window);
