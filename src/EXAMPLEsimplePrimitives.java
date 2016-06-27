@@ -157,6 +157,10 @@ public class EXAMPLEsimplePrimitives {
         // Backface culling: Shows, if the triangles are correctly defined
         glDisable(GL_CULL_FACE);
         
+        // enables transparency from png files
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        
 
     }
 
@@ -192,11 +196,13 @@ public class EXAMPLEsimplePrimitives {
             // ================================== Draw object =====================================
 
             backdrop.render();
-            tubus.render();
+            glEnable(GL_DEPTH_TEST);
             guy.render();
+            tubus.render();
+            glDisable(GL_DEPTH_TEST);
             gui.render();
 
-            gui.reduceLife();
+            //gui.reduceLife();
 
             // Swap the color buffer. We never draw directly to the screen, only in this buffer. So we need to display it
     		glfwSwapBuffers(window);
