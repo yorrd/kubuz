@@ -41,6 +41,8 @@ public class EXAMPLEsimplePrimitives {
 	private int segments = 4;
 	private long time;
 	private int fps_counter;
+
+    protected static boolean paused = false;
     
 
     private void run() {
@@ -100,10 +102,14 @@ public class EXAMPLEsimplePrimitives {
             public void invoke(long window, int key, int scancode, int action, int mods) {
             	if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
                     glfwSetWindowShouldClose(window, true); // We will detect this in our rendering loop
-            	if ( key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
+            	if ( key == GLFW_KEY_RIGHT && action == GLFW_PRESS )
             		((Kubus)tubus).turn(true);
-            	if ( key == GLFW_KEY_LEFT && action == GLFW_PRESS)
+            	if ( key == GLFW_KEY_LEFT && action == GLFW_PRESS )
                     tubus.turn(false);
+                if ( key == GLFW_KEY_B && action == GLFW_PRESS ) {
+                    paused = !paused;
+                    gui.pauseUnPause();
+                }
             }
         });
 
@@ -172,37 +178,41 @@ public class EXAMPLEsimplePrimitives {
         while ( !glfwWindowShouldClose(window) ) {
 
 
-            // =============================== Mechanics =========================================
+            if (paused) {
+                // if it's paused, draw the pause screen and keep the rest still
 
-            tubus.moveZ(speed);
-            tubus.progress();
-        	
-        	// wenn du vsync ausmachst hab ich 4000 fps und die bewegung ist seeehr schnell :>
-            if (fps_counter == 0) {
-                time = System.currentTimeMillis();
-                fps_counter++;
-            }
-            else if (fps_counter == 100){
-            	System.out.println("FPS: " + 100000 / (System.currentTimeMillis() - time));
-                time = System.currentTimeMillis();
-                fps_counter = 0;
-            }
-            else {
-            	fps_counter++;
-            }
-                     
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
+            } else {
+                // =============================== Mechanics =========================================
 
-            // ================================== Draw object =====================================
+                tubus.moveZ(speed);
+                tubus.progress();
 
-            backdrop.render();
-            glEnable(GL_DEPTH_TEST);
-            guy.render();
-            tubus.render();
-            glDisable(GL_DEPTH_TEST);
+                // wenn du vsync ausmachst hab ich 4000 fps und die bewegung ist seeehr schnell :>
+                if (fps_counter == 0) {
+                    time = System.currentTimeMillis();
+                    fps_counter++;
+                }
+                else if (fps_counter == 100){
+                    System.out.println("FPS: " + 100000 / (System.currentTimeMillis() - time));
+                    time = System.currentTimeMillis();
+                    fps_counter = 0;
+                }
+                else {
+                    fps_counter++;
+                }
+
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
+
+                // ================================== Draw object =====================================
+
+                backdrop.render();
+                glEnable(GL_DEPTH_TEST);
+                tubus.render();
+                guy.render();
+                glDisable(GL_DEPTH_TEST);
+            }
+
             gui.render();
-
-            //gui.reduceLife();
 
             // Swap the color buffer. We never draw directly to the screen, only in this buffer. So we need to display it
     		glfwSwapBuffers(window);

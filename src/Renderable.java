@@ -281,7 +281,7 @@ abstract class Renderable {
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
         // Upload the texture data and generate mip maps (for scaling)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tWidth, tHeight, 0,
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tWidth, tHeight, 0,
                 GL_RGBA, GL_UNSIGNED_BYTE, buf);
         glGenerateMipmap(GL_TEXTURE_2D);
 
