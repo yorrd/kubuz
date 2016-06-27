@@ -102,10 +102,10 @@ public class EXAMPLEsimplePrimitives {
             public void invoke(long window, int key, int scancode, int action, int mods) {
             	if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
                     glfwSetWindowShouldClose(window, true); // We will detect this in our rendering loop
-            	if ( key == GLFW_KEY_RIGHT && action == GLFW_PRESS )
-            		((Kubus)tubus).turn(true);
-            	if ( key == GLFW_KEY_LEFT && action == GLFW_PRESS )
-                    tubus.turn(false);
+            	if ( key == GLFW_KEY_RIGHT && action != GLFW_RELEASE  )
+            		guy.moveX(0.03f);
+            	if ( key == GLFW_KEY_LEFT && action != GLFW_RELEASE )
+            		guy.moveX(-0.03f);
                 if ( key == GLFW_KEY_B && action == GLFW_PRESS ) {
                     paused = !paused;
                     gui.pauseUnPause();
@@ -185,6 +185,7 @@ public class EXAMPLEsimplePrimitives {
 
                 tubus.moveZ(speed);
                 tubus.progress();
+                guy.animate();
             }
             
             // wenn du vsync ausmachst hab ich 4000 fps und die bewegung ist seeehr schnell :>
