@@ -19,8 +19,6 @@ class Bug extends Renderable{
 	// Constructor
 	Bug(){
 		this.textureFile = "gdv.png";
-		shaderVFile = "guivertex.glsl";
-		shaderFFile = "guifragment.glsl";
 		init();
 	}
 	
@@ -58,10 +56,14 @@ class Bug extends Renderable{
     	}
     	// texture Array
     	index = 0;
-    	textureArray = new float[vertexArray.length];
-    	for(int i = 0; i < vertexArray.length / 3; i++) {
-    		textureArray[index++] = i % 2; 
-    		textureArray[index++] = i % 3; 
+    	textureArray = new float[2 * vertexArray.length];
+    	for(int i = 0; i < 6; i++) {
+    		textureArray[index++] = 0.1f; 
+    		textureArray[index++] = 0.1f;
+    	}
+    	for(int i = 6; i < vertexArray.length; i++) {
+    		textureArray[index++] = 0f; 
+    		textureArray[index++] = 0f; 
     	}
     	// indexArray
     	indexArray = new int[24 + 36];
@@ -77,14 +79,20 @@ class Bug extends Renderable{
     		indexArray[index++] = 1 + (1 + i) % 4; 
     	}
     	for(int i = 0; i < 6; i++) {
-    		indexArray[index++] = 18 + i * 3; 
-    		indexArray[index++] = 19 + i * 3; 
-    		indexArray[index++] = 20 + i * 3; 
-    		indexArray[index++] = 19 + i * 3; 
-    		indexArray[index++] = 20 + i * 3; 
-    		indexArray[index++] = 20 + i * 3; 
+    		indexArray[index++] = 6 + i * 3; 
+    		indexArray[index++] = 7 + i * 3; 
+    		indexArray[index++] = 8 + i * 3; 
+    		indexArray[index++] = 7 + i * 3; 
+    		indexArray[index++] = 7 + i * 3; 
+    		indexArray[index++] = 8 + i * 3; 
     	}
-    	vertexArray = changeZ(0.3f, vertexArray);
+    	vertexArray = changeZ(-0.1f, vertexArray);
+		System.out.println("TriangleList");
+    	for(int i = 0; i < indexArray.length; i++) {
+    		System.out.println(i + " : " + indexArray[i++]);
+    		System.out.println(i + " : " + indexArray[i++]);
+    		System.out.println(i + " : " + indexArray[i]);
+    	}
     }
     
     private float[] createLeg(float offset_x, float offset_z) {
