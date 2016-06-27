@@ -34,7 +34,7 @@ class GUI extends Renderable {
             indexArray = new int[] {0, 1, 2, 2, 1, 3};
 
         } else {
-            textureFile = "gdv.png";
+            textureFile = "pause.png";
             float width = .1f;
 
             vertexArray = new float[] {
