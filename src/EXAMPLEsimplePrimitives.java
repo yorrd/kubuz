@@ -12,6 +12,8 @@
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 
+import java.util.HashMap;
+
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.*;
@@ -32,18 +34,21 @@ public class EXAMPLEsimplePrimitives {
     private static int HEIGHT = 800;
     
     private Kubus tubus;
-    private Kubus lubus;
     private Bug guy;
     private GUI gui;
     private Renderable backdrop;
 	private float speed = 0.01f;
-	private int numEdges = 5;
+	private int numEdges = 9;
 	private int segments = 4;
 	private long time;
 	private int fps_counter;
 
-    protected static boolean paused = false;
-    
+    static boolean paused = false;
+    private static HashMap<Integer, Boolean> steeringKeysPressed = new HashMap<>();
+    {
+        steeringKeysPressed.put(GLFW_KEY_RIGHT, false);
+        steeringKeysPressed.put(GLFW_KEY_LEFT, false);
+    }
 
     private void run() {
         try {
@@ -102,10 +107,8 @@ public class EXAMPLEsimplePrimitives {
             public void invoke(long window, int key, int scancode, int action, int mods) {
             	if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
                     glfwSetWindowShouldClose(window, true); // We will detect this in our rendering loop
-            	if ( key == GLFW_KEY_RIGHT && action != GLFW_RELEASE  )
-            		guy.moveX(0.03f);
-            	if ( key == GLFW_KEY_LEFT && action != GLFW_RELEASE )
-            		guy.moveX(-0.03f);
+                if ( key == GLFW_KEY_RIGHT || key == GLFW_KEY_LEFT )
+                    steeringKeysPressed.put(key, action != GLFW_RELEASE);
                 if ( key == GLFW_KEY_B && action == GLFW_PRESS ) {
                     paused = !paused;
                     gui.pauseUnPause();
@@ -178,14 +181,34 @@ public class EXAMPLEsimplePrimitives {
         while ( !glfwWindowShouldClose(window) ) {
 
 
-            if (paused) {
-                // dont update mechanics
-            } else {
+            if (!paused) {
                 // =============================== Mechanics =========================================
 
                 tubus.moveZ(speed);
                 tubus.progress();
                 guy.animate();
+
+                // evaluate this.steeringKeysPressed aka make it move like the user asked us to
+                if(steeringKeysPressed.get(GLFW_KEY_RIGHT)) {
+                    guy.moveX(0.03f);
+                    if(!guy.isInBounds(-tubus.getWidth() / 2, tubus.getWidth() / 2)) {
+                        tubus.turn(true);
+                        guy.moveX(-tubus.getWidth() / 2);
+                    }
+                }
+                if(steeringKeysPressed.get(GLFW_KEY_LEFT)) {
+                    guy.moveX(-0.03f);
+                    if (!guy.isInBounds(-tubus.getWidth() / 2, tubus.getWidth() / 2)) {
+                        tubus.turn(false);
+                        guy.moveX(tubus.getWidth() / 2);
+                    }
+                }
+
+                // check if we're falling through at the moment
+                if(tubus.isHole(guy.getX())) {
+                    guy.fall();
+                    gui.reduceLife();
+                }
             }
             
             // wenn du vsync ausmachst hab ich 4000 fps und die bewegung ist seeehr schnell :>

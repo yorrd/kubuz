@@ -5,6 +5,7 @@ class Bug extends Renderable{
 	private float overGround = 0.02f;
 	private float bodySize = 0.05f;
 	private float posX = 0f;
+	private float posY = 0f;
 	private int aniSteps = 18; // multiple 3
 	private float legAnimation[][] = new float[6][9 * aniSteps];
 	private int[] animationList;
@@ -15,6 +16,7 @@ class Bug extends Renderable{
 			-bodySize / 2, 0.0f, bodySize* 2 / 3,
 			-bodySize / 2, 0.0f, -bodySize* 2 / 3,		
 	};
+    private long fallingSince = 0;
 	
 	// Constructor
 	Bug(){
@@ -87,7 +89,7 @@ class Bug extends Renderable{
     private void animateLeg(int number, int step){
     	for(int i = 0; i < 9; i += 3) {
         	vertexArray[15 + number * 12 + i] =legAnimation[number][step * 9 + i] + posX;
-        	vertexArray[16 + number * 12 + i] =legAnimation[number][step * 9 + i + 1];
+        	vertexArray[16 + number * 12 + i] =legAnimation[number][step * 9 + i + 1] + posY;
         	vertexArray[17 + number * 12 + i] =legAnimation[number][step * 9 + i + 2];
     	}
     }
@@ -169,4 +171,28 @@ class Bug extends Renderable{
     	}
     }
 
+    void moveY(float translateY) {
+        posY += translateY;
+        for(int i = 1; i < vertexArray.length; i += 3) {
+            vertexArray[i] += translateY;
+        }
+    }
+
+	boolean isInBounds(float left, float right) {
+		// TODO use proper width rather than estimate
+		return (posX + .3f) < right && (posX - .3f) > left;
+	}
+
+    public float getX() {
+        return posX;
+    }
+
+    public void fall() {
+        if(fallingSince == 0)
+            fallingSince = System.currentTimeMillis();
+
+        float duration = (System.currentTimeMillis() - fallingSince) / 1000f;  // difference to now in seconds
+        System.out.println(duration);
+        moveY(-duration * 9.81f);
+    }
 }

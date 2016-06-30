@@ -151,4 +151,13 @@ public class Kubus extends Renderable {
         	curr_level = stage.get_level();
     	}
     }
+
+	float getWidth() {
+		return radius * 2 * (float) Math.PI / numEdges;
+	}
+
+    boolean isHole(float x) {
+        // TODO
+        return false;
+    }
 }

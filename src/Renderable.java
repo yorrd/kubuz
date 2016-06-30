@@ -235,7 +235,7 @@ abstract class Renderable {
     // Setupmatrices from example
     private void setupMatrices() {
     	// Setup projection and view matrix
-    	projectionMatrix = new PerspectiveMatrix(-1,1,-1,1,0.1f,2f);
+    	projectionMatrix = new PerspectiveMatrix(-1,1,-1,1,0.1f,20f);
     	viewMatrix = new TranslationMatrix(cameraPos);
     	// first translate, then rotate. Remember the flipped order
         modelMatrix = new TranslationMatrix(new Vec3(0,0,1));  // translate...
