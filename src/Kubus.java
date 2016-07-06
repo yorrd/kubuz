@@ -12,7 +12,7 @@ public class Kubus extends Renderable {
     private int renderDepth = 15;
     private int numEdges;
     private int segments;
-    private float radius = 2f;
+    private float radius = 4f;
     private float z_distance = -0.2f;
     private int rotation = 0;
     private int position = 0;
@@ -126,7 +126,7 @@ public class Kubus extends Renderable {
         }
     	else {
         	vertexArray = changeZ(offset_z, vertexArray);
-    	}
+    	}    	
     }
     
     // turns the indices, not the vertices
@@ -153,11 +153,15 @@ public class Kubus extends Renderable {
     }
 
 	float getWidth() {
-		return radius * 2 * (float) Math.PI / numEdges;
+		return segments * (vertexArray[0] - vertexArray[3]);
 	}
 
     boolean isHole(float x) {
         // TODO
         return false;
+    }
+    
+    float getGround() {
+    	return vertexArray[1];
     }
 }

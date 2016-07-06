@@ -38,10 +38,11 @@ public class EXAMPLEsimplePrimitives {
     private GUI gui;
     private Renderable backdrop;
 	private float speed = 0.01f;
-	private int numEdges = 9;
+	private int numEdges = 6;
 	private int segments = 4;
 	private long time;
 	private int fps_counter;
+	private float insectAngle = 0;
 
     static boolean paused = false;
     private static HashMap<Integer, Boolean> steeringKeysPressed = new HashMap<>();
@@ -190,14 +191,25 @@ public class EXAMPLEsimplePrimitives {
 
                 // evaluate this.steeringKeysPressed aka make it move like the user asked us to
                 if(steeringKeysPressed.get(GLFW_KEY_RIGHT)) {
-                    guy.moveX(0.03f);
+                    //guy.moveX(0.01f);
+                    guy.modifyModel(0,0,0,0.01f,0,0);
+                    if(insectAngle < 9) {
+                        guy.modifyModel(0,5,0,0,0,0);
+                        insectAngle += 1; 
+                        System.out.println(insectAngle);
+                    }
                     if(!guy.isInBounds(-tubus.getWidth() / 2, tubus.getWidth() / 2)) {
                         tubus.turn(true);
                         guy.moveX(-tubus.getWidth() / 2);
                     }
                 }
                 if(steeringKeysPressed.get(GLFW_KEY_LEFT)) {
-                    guy.moveX(-0.03f);
+                    //guy.moveX(-0.01f);
+                    guy.modifyModel(0,0,0,-0.01f,0,0);
+                    if(insectAngle > -9) {
+                        guy.modifyModel(0,-5,0,0,0,0);
+                        insectAngle -= 1;                    	
+                    }
                     if (!guy.isInBounds(-tubus.getWidth() / 2, tubus.getWidth() / 2)) {
                         tubus.turn(false);
                         guy.moveX(tubus.getWidth() / 2);

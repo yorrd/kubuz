@@ -47,6 +47,7 @@ abstract class Renderable {
     private IntBuffer indexBuffer;    
     private Vec3 cameraPos = new Vec3(0,0.6f,-1.4);
     private Vec3 modelAngle = new Vec3(0,0,0);
+    private Vec3 translate = new Vec3(0,0,1);
     private Matrix4 projectionMatrix = null;
     private Matrix4 viewMatrix = null;
     private Matrix4 modelMatrix = null;
@@ -63,6 +64,16 @@ abstract class Renderable {
     	setupMatrices();
     }
        
+    public void modifyModel(float setMX, float setMY, float setMZ, float setTX, float setTY, float setTZ){
+    	modelAngle.x += setMX;
+    	modelAngle.y += setMY;
+    	modelAngle.z += setMZ;
+    	translate.x += setTX;
+    	translate.y += setTY;
+    	translate.z += setTZ;
+        setupMatrices();
+    }
+    
     private void initBuffers() {
         vaoId = glGenVertexArrays();
         vboId = glGenBuffers();
@@ -155,8 +166,7 @@ abstract class Renderable {
         glBindVertexArray(0);
         glUseProgram(0);
     }
-    
-    
+        
     private void setupShader() {
         pId = glCreateProgram();
 
@@ -238,9 +248,9 @@ abstract class Renderable {
     	projectionMatrix = new PerspectiveMatrix(-1,1,-1,1,0.1f,20f);
     	viewMatrix = new TranslationMatrix(cameraPos);
     	// first translate, then rotate. Remember the flipped order
-        modelMatrix = new TranslationMatrix(new Vec3(0,0,1));  // translate...
-        modelMatrix = (Matrix4) new RotationMatrix(modelAngle.y, mat.Axis.Y).mul(modelMatrix); // ... and rotate, multiply matrices
-
+        modelMatrix = (Matrix4) new RotationMatrix(modelAngle.y, mat.Axis.Y); // ... and rotate, multiply matrices
+        modelMatrix = (Matrix4) new TranslationMatrix(translate).mul(modelMatrix);  // translate...
+ 
     }
     
     // loadPNGTexture from example
