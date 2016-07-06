@@ -177,10 +177,12 @@ public class EXAMPLEsimplePrimitives {
 
     private void loop() throws Exception {
 
+        int maxTurnDegree = 20;
+        int turnIncrement = 4;
+
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
         while ( !glfwWindowShouldClose(window) ) {
-
 
             if (!paused) {
                 // =============================== Mechanics =========================================
@@ -193,9 +195,9 @@ public class EXAMPLEsimplePrimitives {
                 if(steeringKeysPressed.get(GLFW_KEY_RIGHT)) {
                     //guy.moveX(0.01f);
                     guy.modifyModel(0,0,0,0.01f,0,0);
-                    if(insectAngle < 9) {
-                        guy.modifyModel(0,5,0,0,0,0);
-                        insectAngle += 1; 
+                    if(insectAngle < maxTurnDegree) {
+                        guy.modifyModel(0,turnIncrement,0,0,0,0);
+                        insectAngle += turnIncrement;
                         System.out.println(insectAngle);
                     }
                     if(!guy.isInBounds(-tubus.getWidth() / 2, tubus.getWidth() / 2)) {
@@ -206,13 +208,20 @@ public class EXAMPLEsimplePrimitives {
                 if(steeringKeysPressed.get(GLFW_KEY_LEFT)) {
                     //guy.moveX(-0.01f);
                     guy.modifyModel(0,0,0,-0.01f,0,0);
-                    if(insectAngle > -9) {
-                        guy.modifyModel(0,-5,0,0,0,0);
-                        insectAngle -= 1;                    	
+                    if(insectAngle > -maxTurnDegree) {
+                        guy.modifyModel(0,-turnIncrement,0,0,0,0);
+                        insectAngle -= turnIncrement;
                     }
                     if (!guy.isInBounds(-tubus.getWidth() / 2, tubus.getWidth() / 2)) {
                         tubus.turn(false);
                         guy.moveX(tubus.getWidth() / 2);
+                    }
+                }
+                if(!steeringKeysPressed.get(GLFW_KEY_LEFT) && !steeringKeysPressed.get(GLFW_KEY_RIGHT)) {
+                    if(insectAngle != 0) {
+                        int change = turnIncrement * (insectAngle < 0 ? 1 : -1);
+                        insectAngle += change;
+                        guy.modifyModel(0, change, 0, 0, 0, 0);
                     }
                 }
 
