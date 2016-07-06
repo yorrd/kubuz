@@ -179,6 +179,7 @@ public class EXAMPLEsimplePrimitives {
 
         int maxTurnDegree = 20;
         int turnIncrement = 4;
+        float movingIncrement = .02f;
 
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
@@ -194,7 +195,7 @@ public class EXAMPLEsimplePrimitives {
                 // evaluate this.steeringKeysPressed aka make it move like the user asked us to
                 if(steeringKeysPressed.get(GLFW_KEY_RIGHT)) {
                     //guy.moveX(0.01f);
-                    guy.modifyModel(0,0,0,0.01f,0,0);
+                    guy.modifyModel(0,0,0,movingIncrement,0,0);
                     if(insectAngle < maxTurnDegree) {
                         guy.modifyModel(0,turnIncrement,0,0,0,0);
                         insectAngle += turnIncrement;
@@ -207,7 +208,7 @@ public class EXAMPLEsimplePrimitives {
                 }
                 if(steeringKeysPressed.get(GLFW_KEY_LEFT)) {
                     //guy.moveX(-0.01f);
-                    guy.modifyModel(0,0,0,-0.01f,0,0);
+                    guy.modifyModel(0,0,0,-movingIncrement,0,0);
                     if(insectAngle > -maxTurnDegree) {
                         guy.modifyModel(0,-turnIncrement,0,0,0,0);
                         insectAngle -= turnIncrement;
