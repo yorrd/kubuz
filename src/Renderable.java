@@ -47,7 +47,7 @@ abstract class Renderable {
     private IntBuffer indexBuffer;    
     private Vec3 cameraPos = new Vec3(0,2.4f,-1.4);
     private Vec3 modelAngle = new Vec3(0,0,0);
-    private Vec3 translate = new Vec3(0,0,1);
+    protected Vec3 translate = new Vec3(0,0,1);
     private Matrix4 projectionMatrix = null;
     private Matrix4 viewMatrix = null;
     private Matrix4 modelMatrix = null;

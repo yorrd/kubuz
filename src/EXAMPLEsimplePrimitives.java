@@ -202,7 +202,7 @@ public class EXAMPLEsimplePrimitives {
                     }
                     if(!guy.isInBounds(-tubus.getWidth() / 2, tubus.getWidth() / 2)) {
                         tubus.turn(true);
-                        guy.moveX(-tubus.getWidth() / 2);
+                        guy.modifyModel(0, 0, 0, -(tubus.getWidth() - guy.getBodyWidth()), 0, 0);
                     }
                 }
                 if(steeringKeysPressed.get(GLFW_KEY_LEFT)) {
@@ -214,7 +214,7 @@ public class EXAMPLEsimplePrimitives {
                     }
                     if (!guy.isInBounds(-tubus.getWidth() / 2, tubus.getWidth() / 2)) {
                         tubus.turn(false);
-                        guy.moveX(tubus.getWidth() / 2);
+                        guy.modifyModel(0, 0, 0, tubus.getWidth() - guy.getBodyWidth(), 0, 0);
                     }
                 }
                 if(!steeringKeysPressed.get(GLFW_KEY_LEFT) && !steeringKeysPressed.get(GLFW_KEY_RIGHT)) {

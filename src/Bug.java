@@ -4,8 +4,6 @@ class Bug extends Renderable{
 	private float ground = -3.46f; // the level where the bug walks on
 	private float overGround = 0.02f;
 	private float bodySize = 0.05f;
-	private float posX = 0f;
-	private float posY = 0f;
 	private int aniSteps = 18; // multiple 3
 	private float legAnimation[][] = new float[6][9 * aniSteps];
 	private int[] animationList;
@@ -104,8 +102,8 @@ class Bug extends Renderable{
     // short function to transfer the next step of the animation into vertexArray
     private void animateLeg(int number, int step){
     	for(int i = 0; i < 9; i += 3) {
-        	vertexArray[15 + number * 12 + i] =legAnimation[number][step * 9 + i] + posX;
-        	vertexArray[16 + number * 12 + i] =legAnimation[number][step * 9 + i + 1] + posY;
+        	vertexArray[15 + number * 12 + i] =legAnimation[number][step * 9 + i];
+        	vertexArray[16 + number * 12 + i] =legAnimation[number][step * 9 + i + 1];
         	vertexArray[17 + number * 12 + i] =legAnimation[number][step * 9 + i + 2];
     	}
     }
@@ -177,31 +175,15 @@ class Bug extends Renderable{
     	}
     }
 
-    // short function to move the insect in x-direction
-    public void moveX(float scaleX) {
-    	posX += scaleX;
-    	for(int i = 0; i < vertexArray.length; i += 3) {
-    		vertexArray[i] += scaleX;
-    	}
-    }
-
-    // short function to move the insect in y-direction
-    void moveY(float translateY) {
-        posY += translateY;
-        for(int i = 1; i < vertexArray.length; i += 3) {
-            vertexArray[i] += translateY;
-        }
-    }
-
 
 	boolean isInBounds(float left, float right) {
 		// TODO use proper width rather than estimate
-		return (posX + 8 * bodySize / 3) < right && (posX - 8 * bodySize / 3) > left;
+		return ((float)translate.x + 8 * bodySize / 3) < right && ((float)translate.x - 8 * bodySize / 3) > left;
 	}
     
 	// function to check where the insect is right now
     public float getX() {
-        return posX;
+        return (float)translate.x;
     }
 
     // makes the insect fall
@@ -211,7 +193,10 @@ class Bug extends Renderable{
 
         float duration = (System.currentTimeMillis() - fallingSince) / 1000f;  // difference to now in seconds
         System.out.println(duration);
-        moveY(-duration * 9.81f);
+		modifyModel(0, 0, 0, 0, -duration * 9.81f, 0);
     }
-    
+
+    public float getBodyWidth() {
+        return 0.15f * 2;
+    }
 }
