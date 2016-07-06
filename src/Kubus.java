@@ -38,6 +38,7 @@ public class Kubus extends Renderable {
 		createVertexArray();
 		createIndexArray();
 		createTextureArray();
+		System.out.println(vertexArray[4]);
 	}
 	
 	// creates one segment, moves it in the right z position and copies it into vertexArray

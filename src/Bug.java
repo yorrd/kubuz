@@ -1,7 +1,7 @@
 
 class Bug extends Renderable{
 
-	private float ground = -1.61f; // the level where the bug walks on
+	private float ground = -3.46f; // the level where the bug walks on
 	private float overGround = 0.02f;
 	private float bodySize = 0.05f;
 	private float posX = 0f;
@@ -9,7 +9,7 @@ class Bug extends Renderable{
 	private int aniSteps = 18; // multiple 3
 	private float legAnimation[][] = new float[6][9 * aniSteps];
 	private int[] animationList;
-	private float speed = 0.008f;
+	private float speed = 0.01f;
 	private float[] body = { 
 			bodySize, 0.0f, bodySize,
 			bodySize, 0.0f, -bodySize,
