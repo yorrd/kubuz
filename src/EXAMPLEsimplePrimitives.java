@@ -10,11 +10,20 @@
   */
 
 import org.lwjgl.glfw.*;
+import org.lwjgl.openal.AL;
+import org.lwjgl.openal.ALCCapabilities;
 import org.lwjgl.opengl.*;
 
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.HashMap;
 
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.openal.AL10.alGetError;
+import static org.lwjgl.openal.ALC.createCapabilities;
+import static org.lwjgl.openal.ALC10.alcCreateContext;
+import static org.lwjgl.openal.ALC10.alcMakeContextCurrent;
+import static org.lwjgl.openal.ALC10.alcOpenDevice;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
@@ -51,6 +60,9 @@ public class EXAMPLEsimplePrimitives {
         steeringKeysPressed.put(GLFW_KEY_LEFT, false);
     }
 
+    private Playable backgroundMusic;
+    private Playable click;
+
     private void run() {
         try {
             init();
@@ -60,7 +72,8 @@ public class EXAMPLEsimplePrimitives {
             gui = new GUI();
             guy = new Bug();
             backdrop = new Backdrop();
-            backdrop.init();
+            backgroundMusic = new Playable("./background.wav", true, 1f);
+            click = new Playable("./click.wav", false, 1f);
             loop();
 
             // Release window and window callbacks
@@ -108,9 +121,14 @@ public class EXAMPLEsimplePrimitives {
             public void invoke(long window, int key, int scancode, int action, int mods) {
             	if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
                     glfwSetWindowShouldClose(window, true); // We will detect this in our rendering loop
-                if ( key == GLFW_KEY_RIGHT || key == GLFW_KEY_LEFT )
+                if ( key == GLFW_KEY_RIGHT || key == GLFW_KEY_LEFT ) {
                     steeringKeysPressed.put(key, action != GLFW_RELEASE);
+                    if(action == GLFW_PRESS)
+                        click.play();
+                }
                 if ( key == GLFW_KEY_B && action == GLFW_PRESS ) {
+                    if(paused) backgroundMusic.play();
+                    else backgroundMusic.pause();
                     paused = !paused;
                     gui.pauseUnPause();
                 }
@@ -170,12 +188,27 @@ public class EXAMPLEsimplePrimitives {
         // enables transparency from png files
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        
+
+
+        // ==================================== SOUND =============================================
+        // Initialize OpenAL and clear the error bit.
+        try{
+            ALCCapabilities devcaps = createCapabilities(alcOpenDevice((ByteBuffer) null));
+            long context = alcCreateContext(alcOpenDevice((ByteBuffer) null), (IntBuffer) null);
+            alcMakeContextCurrent(context);
+            AL.createCapabilities(devcaps);
+        } catch (Exception le) {
+            le.printStackTrace();
+            return;
+        }
+        alGetError();
 
     }
 
 
     private void loop() throws Exception {
+
+        backgroundMusic.play();
 
         int maxTurnDegree = 20;
         int turnIncrement = 4;
@@ -194,7 +227,6 @@ public class EXAMPLEsimplePrimitives {
 
                 // evaluate this.steeringKeysPressed aka make it move like the user asked us to
                 if(steeringKeysPressed.get(GLFW_KEY_RIGHT)) {
-                    //guy.moveX(0.01f);
                     guy.modifyModel(0,0,0,movingIncrement,0,0);
                     if(insectAngle < maxTurnDegree) {
                         guy.modifyModel(0,turnIncrement,0,0,0,0);
@@ -207,7 +239,6 @@ public class EXAMPLEsimplePrimitives {
                     }
                 }
                 if(steeringKeysPressed.get(GLFW_KEY_LEFT)) {
-                    //guy.moveX(-0.01f);
                     guy.modifyModel(0,0,0,-movingIncrement,0,0);
                     if(insectAngle > -maxTurnDegree) {
                         guy.modifyModel(0,-turnIncrement,0,0,0,0);
