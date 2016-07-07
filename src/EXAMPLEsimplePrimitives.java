@@ -48,7 +48,7 @@ public class EXAMPLEsimplePrimitives {
     private Renderable backdrop;
 	private float speed = 0.01f;
 	private int numEdges = 6;
-	private int segments = 4;
+	private int segments = 4; // multiple of 2
 	private long time;
 	private int fps_counter;
 	private float insectAngle = 0;
@@ -213,6 +213,8 @@ public class EXAMPLEsimplePrimitives {
         int maxTurnDegree = 20;
         int turnIncrement = 4;
         float movingIncrement = .02f;
+        float posX = 0;
+        float posZ = 0.2f;
 
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
@@ -228,18 +230,20 @@ public class EXAMPLEsimplePrimitives {
                 // evaluate this.steeringKeysPressed aka make it move like the user asked us to
                 if(steeringKeysPressed.get(GLFW_KEY_RIGHT)) {
                     guy.modifyModel(0,0,0,movingIncrement,0,0);
+                    posX += movingIncrement;
                     if(insectAngle < maxTurnDegree) {
                         guy.modifyModel(0,turnIncrement,0,0,0,0);
                         insectAngle += turnIncrement;
-                        System.out.println(insectAngle);
                     }
                     if(!guy.isInBounds(-tubus.getWidth() / 2, tubus.getWidth() / 2)) {
                         tubus.turn(true);
                         guy.modifyModel(0, 0, 0, -(tubus.getWidth() - guy.getBodyWidth()), 0, 0);
+                        posX -= (tubus.getWidth() - guy.getBodyWidth());
                     }
                 }
                 if(steeringKeysPressed.get(GLFW_KEY_LEFT)) {
                     guy.modifyModel(0,0,0,-movingIncrement,0,0);
+                    posX -= movingIncrement;
                     if(insectAngle > -maxTurnDegree) {
                         guy.modifyModel(0,-turnIncrement,0,0,0,0);
                         insectAngle -= turnIncrement;
@@ -247,6 +251,7 @@ public class EXAMPLEsimplePrimitives {
                     if (!guy.isInBounds(-tubus.getWidth() / 2, tubus.getWidth() / 2)) {
                         tubus.turn(false);
                         guy.modifyModel(0, 0, 0, tubus.getWidth() - guy.getBodyWidth(), 0, 0);
+                        posX += (tubus.getWidth() - guy.getBodyWidth());
                     }
                 }
                 if(!steeringKeysPressed.get(GLFW_KEY_LEFT) && !steeringKeysPressed.get(GLFW_KEY_RIGHT)) {
@@ -258,7 +263,7 @@ public class EXAMPLEsimplePrimitives {
                 }
 
                 // check if we're falling through at the moment
-                if(tubus.isHole(guy.getX())) {
+                if(tubus.isHole(posX, posZ)) {
                     guy.fall();
                     gui.reduceLife();
                 }

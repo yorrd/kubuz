@@ -13,7 +13,8 @@ public class Kubus extends Renderable {
     private int numEdges;
     private int segments;
     private float radius = 4f;
-    private float z_distance = -0.2f;
+    private float segmentSizeZ = -0.2f;
+    private float segmentSizeX = 0;
     private int rotation = 0;
     private int position = 0;
 
@@ -38,17 +39,17 @@ public class Kubus extends Renderable {
 		createVertexArray();
 		createIndexArray();
 		createTextureArray();
-		System.out.println(vertexArray[4]);
+		segmentSizeX = vertexArray[0] - vertexArray[3];
 	}
 	
 	// creates one segment, moves it in the right z position and copies it into vertexArray
     private void createVertexArray() {
         vertexArray = new float[3  * numEdges * segments * renderDepth];
        	float[] segmentArray;
-    	segmentArray = createSegment(0f);
+    	segmentArray = createSegment(1f);
        	int index_vertex = 0;
         for(int i = 0; i < renderDepth; i ++) {
-        	segmentArray = changeZ(z_distance, segmentArray); 
+        	segmentArray = changeZ(segmentSizeZ, segmentArray); 
             for(int j = 0; j < segmentArray.length; j ++) {
             	vertexArray[index_vertex++] = segmentArray[j];
             }
@@ -123,7 +124,7 @@ public class Kubus extends Renderable {
     	if (vertexArray[2] > 0.5f) {
         	position++;
         	createIndexArray();
-        	vertexArray = changeZ(z_distance + offset_z, vertexArray);
+        	vertexArray = changeZ(segmentSizeZ + offset_z, vertexArray);
         }
     	else {
         	vertexArray = changeZ(offset_z, vertexArray);
@@ -154,12 +155,14 @@ public class Kubus extends Renderable {
     }
 
 	float getWidth() {
-		return segments * (vertexArray[0] - vertexArray[3]);
+		return segments * segmentSizeX;
 	}
 
-    boolean isHole(float x) {
-        // TODO
-        return false;
+    boolean isHole(float posX, float posZ) {
+    	int x = (int) ((segments * segmentSizeX / 2 - posX) / segmentSizeX);
+    	int z = (int) ((vertexArray[2] - posZ) / segmentSizeZ);
+    	if (z < 0) return false;
+    	return curr_level[z + position][(x + (segments * numEdges - rotation)) % (segments * numEdges)];
     }
     
     float getGround() {
