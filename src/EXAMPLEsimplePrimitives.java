@@ -66,6 +66,7 @@ public class EXAMPLEsimplePrimitives {
 
     private Playable backgroundMusic;
     private Playable click;
+    private Playable gameoverSound;
 
     private void run() {
         try {
@@ -78,6 +79,7 @@ public class EXAMPLEsimplePrimitives {
             backdrop = new Backdrop();
             backgroundMusic = new Playable("./background.wav", true, 1f);
             click = new Playable("./click.wav", false, 1f);
+            gameoverSound = new Playable("./gameover.wav", false, 1f);
             loop();
 
             // Release window and window callbacks
@@ -326,6 +328,7 @@ public class EXAMPLEsimplePrimitives {
     }
 
     private void pause() {
+        if(gameover) gameoverSound.play();
         paused = true;
         gui.pauseUnPause();
         backgroundMusic.pause();
