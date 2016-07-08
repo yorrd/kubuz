@@ -1,3 +1,4 @@
+import mat.Vec3;
 
 class Bug extends Renderable{
 
@@ -19,6 +20,10 @@ class Bug extends Renderable{
 	// Constructor
 	Bug(){
 		this.textureFile = "bug.png";
+
+        defaultModelAngle = new Vec3(0, 0, 0);
+        defaultTranslate = new Vec3(0, ground, 1.2);
+
 		init();
 	}
 	
@@ -192,8 +197,12 @@ class Bug extends Renderable{
             fallingSince = System.currentTimeMillis();
 
         float duration = (System.currentTimeMillis() - fallingSince) / 1000f;  // difference to now in seconds
-        System.out.println(duration);
-		modifyModel(0, 0, 0, 0, -duration * 9.81f, 0);
+		modifyModel(0, 0, 0, 0, -duration * 9.81f / 10, 0);  // 1/10 just looks nice
+    }
+
+    public void reset() {
+        fallingSince = 0;
+        super.reset();
     }
 
     public float getBodyWidth() {

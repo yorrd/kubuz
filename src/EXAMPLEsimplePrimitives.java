@@ -32,7 +32,7 @@ public class EXAMPLEsimplePrimitives {
  
     // We need to strongly reference callback instances.
     private GLFWErrorCallback errorCallback;
-    private GLFWKeyCallback   keyCallback;
+    private GLFWKeyCallback keyCallback;
     private GLFWWindowSizeCallback window_size_callback;
  
     // The window handle
@@ -54,11 +54,15 @@ public class EXAMPLEsimplePrimitives {
 	private float insectAngle = 0;
 
     static boolean paused = false;
+    static boolean gameover = false;
     private static HashMap<Integer, Boolean> steeringKeysPressed = new HashMap<>();
-    {
+    static {
         steeringKeysPressed.put(GLFW_KEY_RIGHT, false);
         steeringKeysPressed.put(GLFW_KEY_LEFT, false);
     }
+
+    private long fallenSince = 0;
+    private int immune = 60;
 
     private Playable backgroundMusic;
     private Playable click;
@@ -119,18 +123,20 @@ public class EXAMPLEsimplePrimitives {
         glfwSetKeyCallback(window, keyCallback = new GLFWKeyCallback() {
             @Override
             public void invoke(long window, int key, int scancode, int action, int mods) {
-            	if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
+
+                if(gameover && key == GLFW_KEY_ESCAPE)
+                    restart();
+            	else if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
                     glfwSetWindowShouldClose(window, true); // We will detect this in our rendering loop
+
                 if ( key == GLFW_KEY_RIGHT || key == GLFW_KEY_LEFT ) {
                     steeringKeysPressed.put(key, action != GLFW_RELEASE);
                     if(action == GLFW_PRESS)
                         click.play();
                 }
                 if ( key == GLFW_KEY_B && action == GLFW_PRESS ) {
-                    if(paused) backgroundMusic.play();
-                    else backgroundMusic.pause();
-                    paused = !paused;
-                    gui.pauseUnPause();
+                    if(paused) resume();
+                    else pause();
                 }
             }
         });
@@ -223,7 +229,7 @@ public class EXAMPLEsimplePrimitives {
             if (!paused) {
                 // =============================== Mechanics =========================================
 
-                tubus.moveZ(speed);
+                if(fallenSince == 0) tubus.moveZ(speed);
                 tubus.progress();
                 guy.animate();
 
@@ -263,9 +269,22 @@ public class EXAMPLEsimplePrimitives {
                 }
 
                 // check if we're falling through at the moment
-                if(tubus.isHole(posX, posZ)) {
+                if(immune > 0) immune--;
+                if(fallenSince == 0) {  // not falling yet
+                    if (tubus.isHole(posX, posZ) && immune == 0) {  // if we're on a hole and not immune at the moment
+                        guy.fall();
+                        if(gui.reduceLife()) {
+                            gameover = true;
+                            pause();
+                        }
+                        fallenSince = System.currentTimeMillis();
+                    }
+                } else if(System.currentTimeMillis() - fallenSince < 2000) {
                     guy.fall();
-                    gui.reduceLife();
+                } else {
+                    fallenSince = 0;
+                    immune = 60;
+                    guy.reset();
                 }
             }
             
@@ -282,7 +301,7 @@ public class EXAMPLEsimplePrimitives {
             else {
                 fps_counter++;
             }
-            
+
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
             // ================================== Draw object =====================================
@@ -304,6 +323,27 @@ public class EXAMPLEsimplePrimitives {
             glGetError();
             //System.out.println("=========================");
         }
+    }
+
+    private void pause() {
+        paused = true;
+        gui.pauseUnPause();
+        backgroundMusic.pause();
+    }
+
+    private void resume() {
+        if(gameover) return;
+        paused = false;
+        gui.pauseUnPause();
+        backgroundMusic.play();
+    }
+
+    private void restart() {
+        gameover = false;
+        resume();
+        guy.reset();
+        tubus.reset();
+        // TODO reset kubus and stuff
     }
  	
     public static void main(String[] args) {
