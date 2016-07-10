@@ -49,8 +49,6 @@ public class EXAMPLEsimplePrimitives {
 	private float speed = 0.01f;
 	private int numEdges = 6;
 	private int segments = 4; // multiple of 2
-	private long time;
-	private int fps_counter;
 	private float insectAngle = 0;
 
     static boolean paused = false;
@@ -61,7 +59,8 @@ public class EXAMPLEsimplePrimitives {
         steeringKeysPressed.put(GLFW_KEY_LEFT, false);
     }
 
-    private long fallenSince = 0;
+    private int currentlyFalling = 0;
+    private int currentlyTurning = 0;
     private int immune = 60;
 
     private Playable backgroundMusic;
@@ -228,10 +227,10 @@ public class EXAMPLEsimplePrimitives {
         // the window or has pressed the ESCAPE key.
         while ( !glfwWindowShouldClose(window) ) {
 
-            if (!paused) {
+            if (!paused && currentlyFalling == 0 && currentlyTurning == 0) {
                 // =============================== Mechanics =========================================
 
-                if(fallenSince == 0) tubus.moveZ(speed);
+                tubus.moveZ(speed);
                 tubus.progress();
                 guy.animate();
 
@@ -244,7 +243,7 @@ public class EXAMPLEsimplePrimitives {
                         insectAngle += turnIncrement;
                     }
                     if(!guy.isInBounds(-tubus.getWidth() / 2, tubus.getWidth() / 2)) {
-                        tubus.turn(true);
+                    	tubus.turn(true);
                         guy.modifyModel(0, 0, 0, -(tubus.getWidth() - guy.getBodyWidth()), 0, 0);
                         posX -= (tubus.getWidth() - guy.getBodyWidth());
                     }
@@ -257,7 +256,7 @@ public class EXAMPLEsimplePrimitives {
                         insectAngle -= turnIncrement;
                     }
                     if (!guy.isInBounds(-tubus.getWidth() / 2, tubus.getWidth() / 2)) {
-                        tubus.turn(false);
+                    	tubus.turn(false);
                         guy.modifyModel(0, 0, 0, tubus.getWidth() - guy.getBodyWidth(), 0, 0);
                         posX += (tubus.getWidth() - guy.getBodyWidth());
                     }
@@ -272,37 +271,25 @@ public class EXAMPLEsimplePrimitives {
 
                 // check if we're falling through at the moment
                 if(immune > 0) immune--;
-                if(fallenSince == 0) {  // not falling yet
-                    if (tubus.isHole(posX, posZ) && immune == 0) {  // if we're on a hole and not immune at the moment
-                        guy.fall();
-                        if(gui.reduceLife()) {
-                            gameover = true;
-                            pause();
-                        }
-                        fallenSince = System.currentTimeMillis();
-                    }
-                } else if(System.currentTimeMillis() - fallenSince < 2000) {
+                if (tubus.isHole(posX, posZ) && immune == 0) {  // if we're on a hole and not immune at the moment
                     guy.fall();
-                } else {
-                    fallenSince = 0;
-                    immune = 60;
-                    guy.reset();
+                    currentlyFalling = 100;
                 }
-            }
-            
-            // wenn du vsync ausmachst hab ich 4000 fps und die bewegung ist seeehr schnell :>
-            if (fps_counter == 0) {
-                time = System.currentTimeMillis();
-                fps_counter++;
-            }
-            else if (fps_counter == 100){
-                System.out.println("FPS: " + 100000 / (System.currentTimeMillis() - time));
-                time = System.currentTimeMillis();
-                fps_counter = 0;
-            }
-            else {
-                fps_counter++;
-            }
+            } 
+            else if (!paused && currentlyFalling == 1){
+                if(gui.reduceLife()) {
+                    gameover = true;
+                    pause();
+                }
+            	currentlyFalling = 0;
+                immune = 60;
+                guy.reset();
+                posX = 0;
+            }           
+            else if(!paused && currentlyFalling > 0) {
+                guy.fall();
+                currentlyFalling -= 1;
+            }       
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 

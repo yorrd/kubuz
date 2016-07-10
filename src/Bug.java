@@ -164,23 +164,6 @@ class Bug extends Renderable{
     	}
     }
     
-    // short function to reposition the whole insect and the animation lists
-    public void rePos(float offsetX, float offsetY, float offsetZ) {
-    	for(int i = 0; i < vertexArray.length; i += 3) {
-    		vertexArray[i	 ] += offsetX;
-    		vertexArray[i + 1] += offsetY;
-    		vertexArray[i + 2] += offsetZ;
-    	}
-    	for(int i = 0; i < 6; i++) {
-    		for(int j = 0; j < aniSteps * 9; j += 3) {
-	    		legAnimation[i][j    ] += offsetX;
-	    		legAnimation[i][j + 1] += offsetY;
-	    		legAnimation[i][j + 2] += offsetZ;
-    		}
-    	}
-    }
-
-
 	boolean isInBounds(float left, float right) {
 		// TODO use proper width rather than estimate
 		return ((float)translate.x + 8 * bodySize / 3) < right && ((float)translate.x - 8 * bodySize / 3) > left;
