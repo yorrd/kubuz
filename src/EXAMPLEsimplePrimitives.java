@@ -60,7 +60,6 @@ public class EXAMPLEsimplePrimitives {
     }
 
     private int currentlyFalling = 0;
-    private int currentlyTurning = 0;
     private int immune = 60;
 
     private Playable backgroundMusic;
@@ -219,7 +218,7 @@ public class EXAMPLEsimplePrimitives {
 
         int maxTurnDegree = 20;
         int turnIncrement = 4;
-        float movingIncrement = .02f;
+        float movingIncrement = .03f;
         float posX = 0;
         float posZ = 0.2f;
 
@@ -227,7 +226,7 @@ public class EXAMPLEsimplePrimitives {
         // the window or has pressed the ESCAPE key.
         while ( !glfwWindowShouldClose(window) ) {
 
-            if (!paused && currentlyFalling == 0 && currentlyTurning == 0) {
+            if (!paused && currentlyFalling == 0) {
                 // =============================== Mechanics =========================================
 
                 tubus.moveZ(speed);
@@ -273,7 +272,7 @@ public class EXAMPLEsimplePrimitives {
                 if(immune > 0) immune--;
                 if (tubus.isHole(posX, posZ) && immune == 0) {  // if we're on a hole and not immune at the moment
                     guy.fall();
-                    currentlyFalling = 100;
+                    currentlyFalling = 80;
                 }
             } 
             else if (!paused && currentlyFalling == 1){
@@ -284,6 +283,7 @@ public class EXAMPLEsimplePrimitives {
             	currentlyFalling = 0;
                 immune = 60;
                 guy.reset();
+                insectAngle = 0;
                 posX = 0;
             }           
             else if(!paused && currentlyFalling > 0) {

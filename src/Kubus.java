@@ -86,7 +86,7 @@ public class Kubus extends Renderable {
         indexArray = new int[6  * (numEdges * segments + 1) * renderDepth];
 		int index = 0;
 		for (int j = 0; j < renderDepth - 1; j++){
-			for (int i = 0; i < (segments * numEdges + 1); i++){
+			for (int i = 0; i < (segments * numEdges); i++){
 				if (curr_level[j + position][i]) continue;
 				indexArray[index++] =  j * segments * numEdges + (i + rotation) % (segments * numEdges);
 				indexArray[index++] = (j + 1) * segments * numEdges + (i + rotation) % (segments * numEdges);
