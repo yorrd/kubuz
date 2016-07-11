@@ -1,13 +1,3 @@
-/**
-  * A simple application for displaying a rectangle with drawElements and triangle strip
-  * 
-  * @author Thorsten Gattinger
-  * 
-  * sources:
-  * http://wiki.lwjgl.org/wiki/The_Quad_with_DrawElements and the other Quad-parts
-  * getting started: http://www.lwjgl.org/guide
-  * http://hg.l33tlabs.org/twl/file/tip/src/de/matthiasmann/twl/utils/PNGDecoder.java
-  */
 
 import org.lwjgl.glfw.*;
 import org.lwjgl.openal.AL;
@@ -29,19 +19,7 @@ import static org.lwjgl.system.MemoryUtil.*;
 
 
 public class Kubuz {
- 
-    // We need to strongly reference callback instances.
-    private GLFWErrorCallback errorCallback;
-    private GLFWKeyCallback keyCallback;
-    private GLFWWindowSizeCallback window_size_callback;
- 
-    // The window handle
-    private long window;
-    
-    // Window size
-    private static int WIDTH = 800;
-    private static int HEIGHT = 800;
-    
+
     private Tubus tubus;
     private Insect player;
     private GUI gui;
@@ -53,7 +31,7 @@ public class Kubuz {
 	private float insectAngle = 0;
 
     static boolean paused = false;
-    static boolean gameover = false;
+    static boolean gameOver = false;
     private static HashMap<Integer, Boolean> steeringKeysPressed = new HashMap<>();
     static {
         steeringKeysPressed.put(GLFW_KEY_RIGHT, false);
@@ -68,6 +46,13 @@ public class Kubuz {
     private Playable click;
     private Playable gameoverSound;
 
+    // window handle
+    private long window;
+
+    // window size
+    private static final int WIDTH = 800;
+    private static final int HEIGHT = 800;
+
     private void run() {
         try {
             init();
@@ -81,7 +66,9 @@ public class Kubuz {
             backgroundMusic = new Playable("./background.wav", true, 1f);
             click = new Playable("./click.wav", false, 1f);
             gameoverSound = new Playable("./gameover.wav", false, 1f);
+            // start with the pause screen to allow the player to prepare
             pause();
+            // begin the main loop here in which all the action happens
             loop();
 
             // Release window and window callbacks
@@ -97,10 +84,6 @@ public class Kubuz {
  
     private void init() {
 
-        // Setup an error callback. The default implementation
-        // will print the error message in System.err.
-        glfwSetErrorCallback(errorCallback = GLFWErrorCallback.createPrint(System.err));
- 
         // Initialize GLFW. Most GLFW functions will not work before doing this.
         if ( !glfwInit() )
             throw new IllegalStateException("Unable to initialize GLFW");
@@ -124,11 +107,11 @@ public class Kubuz {
             throw new RuntimeException("Failed to create the GLFW window");
 
         // Setup a key callback. It will be called every time a key is pressed, repeated or released.
-        glfwSetKeyCallback(window, keyCallback = new GLFWKeyCallback() {
+        glfwSetKeyCallback(window, new GLFWKeyCallback() {
             @Override
             public void invoke(long window, int key, int scancode, int action, int mods) {
 
-                if(gameover && key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
+                if(gameOver && key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
                     restart();
             	else if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
                     glfwSetWindowShouldClose(window, true); // We will detect this in our rendering loop
@@ -169,7 +152,7 @@ public class Kubuz {
         glfwShowWindow(window);
 
         // Setup a window size callback for viewport adjusting while resizing
-        glfwSetWindowSizeCallback(window, window_size_callback = new GLFWWindowSizeCallback() {
+        glfwSetWindowSizeCallback(window, new GLFWWindowSizeCallback() {
 			@Override
 			public void invoke(long window, int width, int height) {
 				// Viewport: Use full display size
@@ -291,7 +274,7 @@ public class Kubuz {
                 }
             } else if (!paused && currentlyFalling == 1){
                 if(gui.reduceLife()) {
-                    gameover = true;
+                    gameOver = true;
                     pause();
                 }
             	currentlyFalling = 0;
@@ -329,21 +312,21 @@ public class Kubuz {
     }
 
     private void pause() {
-        if(gameover) gameoverSound.play();
+        if(gameOver) gameoverSound.play();
         paused = true;
         gui.pauseUnPause();
         backgroundMusic.pause();
     }
 
     private void resume() {
-        if(gameover) return;
+        if(gameOver) return;
         paused = false;
         gui.pauseUnPause();
         backgroundMusic.play();
     }
 
     private void restart() {
-        gameover = false;
+        gameOver = false;
         player.resetTranslationMatrix();
         tubus.resetTranslationMatrix();
         levelGUI.reset();

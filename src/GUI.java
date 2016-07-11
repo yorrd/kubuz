@@ -19,7 +19,7 @@ class GUI extends Renderable {
 
         if(Kubuz.paused || gameOver) {
 
-            textureFile = gameOver ? "gameover.png" : "pause.png";
+            textureFile = gameOver ? "gameOver.png" : "pause.png";
             vertexArray = new float[] {
                     -1, -1, 1,
                      1, -1, 1,
