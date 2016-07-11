@@ -76,7 +76,7 @@ public class Kubuz {
             tubus = new Tubus(segments, numEdges);
             gui = new GUI();
             levelGUI = new LevelGUI();
-            player = new Insect(tubus.getGround());
+            player = new Insect(tubus.getGround(), numEdges * 0.01f);
             backdrop = new Backdrop();
             backgroundMusic = new Playable("./background.wav", true, 1f);
             click = new Playable("./click.wav", false, 1f);
@@ -145,6 +145,7 @@ public class Kubuz {
                 if ( key == GLFW_KEY_BACKSPACE && action == GLFW_RELEASE && paused ) {
                     if(numEdges > 9) numEdges = 3;
                     tubus = new Tubus(segments, ++numEdges);
+                    player = new Insect(tubus.getGround(), numEdges * 0.01f);
                     restart();
                 }
             }

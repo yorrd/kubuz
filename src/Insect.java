@@ -5,6 +5,7 @@ class Insect extends Renderable{
 	private float ground = -3.46f; // the level where the bug walks on
 	private float overGround = 0.02f;
 	private float bodySize = 0.05f;
+	private float zPos = 1.2f;
 	private int aniSteps = 18; // multiple 3
 	private float legAnimation[][] = new float[6][9 * aniSteps];
 	private int[] animationList;
@@ -20,12 +21,13 @@ class Insect extends Renderable{
     private double lastJumpPoint = 0;
 	
 	// Constructor
-	Insect(float groundLevel) {
+	Insect(float groundLevel, float zOffset) {
         ground = groundLevel;
+        zPos -= zOffset;
 		this.textureFile = "bug.png";
 
         defaultModelAngle = new Vec3(0, 0, 0);
-        defaultTranslate = new Vec3(0, bodySize / 3 + overGround + ground, 1.2f);
+        defaultTranslate = new Vec3(0, bodySize / 3 + overGround + ground, zPos);
         // we created the insect around the coordinate origin, so we have to put him into the right place
 
 		init();
