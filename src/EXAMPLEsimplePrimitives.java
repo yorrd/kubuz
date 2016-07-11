@@ -342,10 +342,11 @@ public class EXAMPLEsimplePrimitives {
 
     private void restart() {
         gameover = false;
-        resume();
         guy.resetTranslationMatrix();
         tubus.resetTranslationMatrix();
+        levelGUI.reset();
         gui = new GUI();
+        resume();
     }
  	
     public static void main(String[] args) {
