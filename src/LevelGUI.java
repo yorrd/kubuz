@@ -1,15 +1,22 @@
 
-
+/*
+* Another GUI object just for the level counter in the top right. This holds 4 tiny Renderables which it just displays.
+*/
 
 class LevelGUI {
 
+    // width and height of the numbers
     private float unitWidth = .1f;
 
+    // references to all Renderable objects we're using
     private DigitGUI one = new DigitGUI(0);
     private DigitGUI ten = new DigitGUI(1);
     private DigitGUI hundred = new DigitGUI(2);
     private DigitGUI thousand = new DigitGUI(3);
 
+    /**
+     * Move contained Renderables side-by-side, not on top of each other.
+     */
     LevelGUI() {
         one.modifyModel(0, 0, 0, unitWidth * 3, 0, 0);
         ten.modifyModel(0, 0, 0, unitWidth * 2, 0, 0);
@@ -17,7 +24,10 @@ class LevelGUI {
         thousand.modifyModel(0, 0, 0, unitWidth * 0, 0, 0);
     }
 
-    public void increase() {
+    /**
+     * Increase the number which is displayed. This works <999, afterwards it won't increase anymore.
+     */
+    void increase() {
         if(one.n < 9) one.increase();
         else if(ten.n < 9) {one.reset(); ten.increase();}
         else if(hundred.n < 9) {ten.reset(); ten.increase();}
@@ -25,6 +35,9 @@ class LevelGUI {
         // else just leave it at 999 if anyone ever gets there =)
     }
 
+    /**
+     * Render all Renderable objects contained.
+     */
     void render() {
         one.render();
         ten.render();
@@ -32,6 +45,9 @@ class LevelGUI {
         thousand.render();
     }
 
+    /**
+     * Reset all Renderable objects and render the result (0000)
+     */
     void reset() {
         one.reset();
         ten.reset();
@@ -41,9 +57,13 @@ class LevelGUI {
     }
 
 
+    /*
+    * Renderable digits which we're using for the LevelGUI
+    */
+
     private class DigitGUI extends Renderable {
 
-        int n = 0;
+        int n = 0;  // number to show
         int positionFromLeft = 0;
 
         private DigitGUI(int nth) {
@@ -75,12 +95,18 @@ class LevelGUI {
             indexArray = new int[] {0, 1, 2, 2, 1, 3};
         }
 
+        /**
+         * Increase the number we're showing. Make sure to reinitialize so that we see the changes.
+         */
         void increase() {
             if (n == -1) n = 0;
             n++;
             init();
         }
 
+        /**
+         * Reset the number to 0 and make sure to reinitialize so that we see the changes.
+         */
         void reset() {
             n = 0;
             init();

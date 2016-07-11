@@ -1,12 +1,3 @@
-/**
- * abstract class for handling objects that are renderable
- * some functions used from simplePrimivites
- * 
- * @author 
- * 
- */
-
-
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.opengl.GL15.*;
@@ -31,43 +22,62 @@ import mat.RotationMatrix;
 import mat.TranslationMatrix;
 import mat.Vec3;
 
+
+/**
+ * Abstract class for handling objects that are renderable
+ * some functions used from simplePrimivites
+ *
+ * There are different shaders used throughout the game, two each for 3D objects and for the GUI objects which don't
+ * require any matrix transformations because of its HUD-nature.
+ *
+ * @author
+ *
+ */
+
 abstract class Renderable {
 	
-    protected float[] vertexArray;
-    protected float[] textureArray;
-    protected int[] indexArray;
-    protected String textureFile;
-    protected String shaderVFile = "vertex.glsl";
-    protected String shaderFFile = "fragment.glsl";
-    protected int pId;
-    protected int vsId;
-    protected int fsId;
+    float[] vertexArray;
+    float[] textureArray;
+    int[] indexArray;
+    String textureFile;
+    String shaderVFile = "vertex.glsl";
+    String shaderFFile = "fragment.glsl";
+    private int pId;
+    private int vsId;
+    private int fsId;
     private int projectionMatrixLocation = 0;
     private int viewMatrixLocation = 0;
     private int modelMatrixLocation = 0;
     private int useTextureLocation = 0;
-    protected int textureID;
-    protected int vaoId;
-    protected int vboId;
-    protected int tboId;
-    protected int iboId;
+    private int textureID;
+    private int vaoId;
+    private int vboId;
+    private int tboId;
+    private int iboId;
     private FloatBuffer vertexBuffer;
     private FloatBuffer textureBuffer;
     private IntBuffer indexBuffer;
-    protected Vec3 cameraPos = new Vec3(0,1.8f,-1.4);
+    private Vec3 cameraPos = new Vec3(0,1.8f,-1.4);
     private Vec3 modelAngle = new Vec3(0,0,0);
-    protected Vec3 translate = new Vec3(0,0,1);
-    protected Vec3 defaultModelAngle = new Vec3(0, 0, 0);
-    protected Vec3 defaultTranslate = new Vec3(0, 0, 1);
+    Vec3 translate = new Vec3(0,0,1);
+    Vec3 defaultModelAngle = new Vec3(0, 0, 0);
+    Vec3 defaultTranslate = new Vec3(0, 0, 1);
     private Matrix4 projectionMatrix = null;
     private Matrix4 viewMatrix = null;
     private Matrix4 modelMatrix = null;
 
-    // must be overwritten by the object class
+
+    /**
+     * Definition of texture, vertex and index arrays, sometimes a texture file. This will be called whenever
+     * anything changes via the init() function
+     */
     public abstract void createGeometry();
 
-    // constructor MUST call init
-    public void init() {
+    /**
+     * Initializer. The constructor of the Renderable MUST call this in order to set up buffers and texture objects.
+     * This also loads and sets up the shaders and the translation matrix.
+     */
+    void init() {
     	// every object must create textureArray, vertexArray and indexArray via createGeometry
         createGeometry();
         // sets the texture for the object
@@ -79,9 +89,14 @@ abstract class Renderable {
     	// resets the translation matrix
         resetTranslationMatrix();
     }
-       
-    // function to modify the translation matrix, additive
-    public void modifyModel(float setMX, float setMY, float setMZ, float setTX, float setTY, float setTZ){
+
+    /**
+     * Function to modify the translation matrix by increments
+     *
+     * @param setM* rotation increment in the respective axis and degrees
+     * @param setT* translation increment in the respective axis
+     */
+    void modifyModel(float setMX, float setMY, float setMZ, float setTX, float setTY, float setTZ){
     	modelAngle.x += setMX;
     	modelAngle.y += setMY;
     	modelAngle.z += setMZ;
@@ -91,8 +106,10 @@ abstract class Renderable {
         setupMatrices();
     }
 
-    // function to reset the translation matrix to default values
-    public void resetTranslationMatrix() {
+    /**
+     * Reset the translation and rotation matrix to default values stored in class fields
+     */
+    void resetTranslationMatrix() {
         modelAngle.x = defaultModelAngle.x;
         modelAngle.y = defaultModelAngle.y;
         modelAngle.z = defaultModelAngle.z;
@@ -101,8 +118,10 @@ abstract class Renderable {
         translate.z = defaultTranslate.z;
         setupMatrices();
     }
-    
-    // creates the buffers for the object
+
+    /**
+     * Initializes all necessary buffers for the object
+     */
     private void initBuffers() {
     	// creates the buffer in the main memory
         vaoId = glGenVertexArrays();
@@ -128,8 +147,10 @@ abstract class Renderable {
      	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
      	
     }
-   
-    // updates the buffers
+
+    /**
+     * Update the already initialized buffers with new data
+     */
     private void updateBuffers() {
     	// clears the buffer, assigns the new data
     	vertexBuffer.clear();
@@ -163,8 +184,10 @@ abstract class Renderable {
      	glBindVertexArray(0);
         
     }
-    
-    // function for drawing the object
+
+    /**
+     * Actually make the draw call (and set uniforms and some other stuff)
+     */
     void render() {
     	// first update the buffers
     	updateBuffers();
@@ -201,8 +224,10 @@ abstract class Renderable {
         glBindVertexArray(0);
         glUseProgram(0);
     }
-        
-    // setup shaders from example
+
+    /**
+     * Setup shaders (from the example code in moodle)
+     */
     private void setupShader() {
         pId = glCreateProgram();
 
@@ -233,8 +258,14 @@ abstract class Renderable {
         modelMatrixLocation = glGetUniformLocation(pId, "modelMatrix");
         useTextureLocation = glGetUniformLocation(pId, "useTexture");
     }
-    
-    // loadshader from example
+
+    /**
+     * Load shaders (from the example code in moodle)
+     *
+     * @param filename name of the shader file
+     * @param type shader type (GL constant)
+     * @return the shader ID
+     */
     private static int loadShader(String filename, int type) {
         StringBuilder shaderSource = new StringBuilder();
         int shaderID = 0;
@@ -266,8 +297,13 @@ abstract class Renderable {
         return shaderID;
     }
 
-    // toFFB from example
-	private static FloatBuffer toFFB(Matrix4 m){
+    /**
+     * flatten a Matrix to a buffer. Taken from the example code in moodle
+     *
+     * @param m the matrix
+     * @return a float buffer from the matrix values
+     */
+    private static FloatBuffer toFFB(Matrix4 m){
 		FloatBuffer res = BufferUtils.createFloatBuffer(16);
 		for (int i=0;i<4;i++){
 			for (int j=0;j<4;j++){
@@ -276,8 +312,10 @@ abstract class Renderable {
 		}
 		return (FloatBuffer) res.flip();
 	}
-    
-    // setupmatrices from example
+
+    /**
+     * Set up projection-, model- and view-matrices for the shader
+     */
     private void setupMatrices() {
     	// Setup projection and view matrix
     	projectionMatrix = new PerspectiveMatrix(-1,1,-1,1,0.1f,20f);
@@ -289,8 +327,14 @@ abstract class Renderable {
         modelMatrix = (Matrix4) new TranslationMatrix(translate).mul(modelMatrix);  // translate...
  
     }
-    
-    // loadPNGTexture from example
+
+    /**
+     * Utility function to load a PNG texture from file. Also binds the texture and returns its ID.
+     *
+     * @param filename texture file name
+     * @param textureUnit which texture unit to bind to (GL constant)
+     * @return the texture ID of the newly bound texture
+     */
     private static int loadPNGTexture(String filename, int textureUnit) {
         ByteBuffer buf = null;
         int tWidth = 0;

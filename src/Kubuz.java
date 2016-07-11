@@ -279,7 +279,7 @@ public class Kubuz {
                 }
             	currentlyFalling = 0;
                 immune = 60;
-                player.resetTranslationMatrix();
+                player.reset();
                 insectAngle = 0;
                 posX = 0;
             } else if(!paused && currentlyFalling > 0) {
@@ -327,8 +327,8 @@ public class Kubuz {
 
     private void restart() {
         gameOver = false;
-        player.resetTranslationMatrix();
-        tubus.resetTranslationMatrix();
+        player.reset();
+        tubus.reset();
         levelGUI.reset();
         gui = new GUI();
         resume();

@@ -1,8 +1,12 @@
 import mat.Vec3;
 
+/*
+* The insect which is controlled by the player. It has a body and legs, can move, jump and fall. Subclass of Renderable.
+*/
+
 class Insect extends Renderable{
 
-	private float ground = -3.46f; // the level where the bug walks on
+	private float ground = -3.46f; // the level which the bug walks on
 	private float overGround = 0.02f;
 	private float bodySize = 0.05f;
 	private float zPos = 1.2f;
@@ -19,20 +23,20 @@ class Insect extends Renderable{
     private long fallingSince = 0;
 	private int jumpingSince = 0;
     private double lastJumpPoint = 0;
-	
-	// Constructor
+
 	Insect(float groundLevel, float zOffset) {
         ground = groundLevel;
         zPos -= zOffset;
 		this.textureFile = "bug.png";
 
+        // change the default position of the insect, it needs to be on the ground of the tubus and somewhat in front of
+        // the camera
         defaultModelAngle = new Vec3(0, 0, 0);
         defaultTranslate = new Vec3(0, bodySize / 3 + overGround + ground, zPos);
-        // we created the insect around the coordinate origin, so we have to put him into the right place
 
 		init();
 	}
-	
+
     public void createGeometry() {
     	// vertexArray
     	vertexArray = new float[6 * 12 + 12];
@@ -107,25 +111,38 @@ class Insect extends Renderable{
     		indexArray[index++] = 7 + i * 4; 
     	}
     }
-    
-    // short function to transfer the next step of the animation into vertexArray
+
+    /**
+     * Short function to transfer the next step of the animation into vertexArray.
+     *
+     * @param number specify which leg we're talking about
+     * @param step number of steps
+     */
     private void animateLeg(int number, int step){
     	for(int i = 0; i < 9; i += 3) {
-        	vertexArray[15 + number * 12 + i] =legAnimation[number][step * 9 + i];
-        	vertexArray[16 + number * 12 + i] =legAnimation[number][step * 9 + i + 1];
-        	vertexArray[17 + number * 12 + i] =legAnimation[number][step * 9 + i + 2];
+        	vertexArray[15 + number * 12 + i] = legAnimation[number][step * 9 + i];
+        	vertexArray[16 + number * 12 + i] = legAnimation[number][step * 9 + i + 1];
+        	vertexArray[17 + number * 12 + i] = legAnimation[number][step * 9 + i + 2];
     	}
     }
-    
-    // public function to handle the animation
-    public void animate() {
+
+    /**
+     * Do one step in the leg animation.
+     */
+    void animate() {
     	for (int i = 0; i < 6; i++) {
     		animationList[i] = (animationList[i] + 1) % aniSteps;
     		animateLeg(i, animationList[i]);
     	}
     }
-    
-    // creates animation list of one leg, scaleX defines direction and range
+
+    /**
+     * Creates animation list of one leg, scaleX defines direction and range.
+     *
+     * @param number leg number
+     * @param scaleX direction and range
+     * @param root origin of the leg (at the body)
+     */
     private void createLegAnimation(int number, float scaleX, float[] root) {
     	float zPos = - aniSteps * speed / 2;
     	int index = 0;
@@ -167,19 +184,20 @@ class Insect extends Renderable{
     		alpha -= 2 * (float) (2 * Math.PI)* 30 / (aniSteps * 360);
     	}
     }
-    
-	boolean isInBounds(float left, float right) {
-		// TODO use proper width rather than estimate
+
+    /**
+     * @param left left border
+     * @param right right border
+     * @return whether the insect is within those borders
+     */
+    boolean isInBounds(float left, float right) {
 		return ((float)translate.x + 8 * bodySize / 3) < right && ((float)translate.x - 8 * bodySize / 3) > left;
 	}
-    
-	// function to check where the insect is right now
-    public float getX() {
-        return (float)translate.x;
-    }
 
-    // makes the insect fall
-    public void fall() {
+    /**
+     * Do one step in the falling animation. This is using the standard physical formula for falling objects.
+     */
+    void fall() {
         if(fallingSince == 0)
             fallingSince = System.currentTimeMillis();
 
@@ -187,21 +205,34 @@ class Insect extends Renderable{
 		modifyModel(0, 0, 0, 0, -duration * 9.81f / 10, 0);  // 1/10 just looks nice
     }
 
-    public void resetTranslationMatrix() {
+    /**
+     * Reset the insect to its original position (used for the reset for example)
+     */
+    void reset() {
         fallingSince = 0;
         jumpingSince = 0;
-        super.resetTranslationMatrix();
+        resetTranslationMatrix();
     }
 
-    public float getBodyWidth() {
+    /**
+     * @return the width of the body
+     */
+    float getBodyWidth() {
         return 0.15f * 2;
     }
 
-	public void jump() {
+    /**
+     * Initiate the jump animation.
+     */
+    void jump() {
 		jumpingSince = 1;
 	}
 
-	public void doJumpStep() {
+    /**
+     * Do one step in the jumping animation, according to a quadratic formula (-1/1800(x^2-30)+.5). Triggered by the
+     * main loop.
+     */
+    void doJumpStep() {
         float x = jumpingSince++;
         double currentY = -1/1800D*Math.pow(x-30, 2) + .5f;
         double delta = currentY - lastJumpPoint;
@@ -213,7 +244,10 @@ class Insect extends Renderable{
         } else modifyModel(0, 0, 0, 0, (float) delta, 0);
 	}
 
-	public boolean isJumping() {
+    /**
+     * @return whether we're currently in the jumping animation or not
+     */
+    boolean isJumping() {
 		return jumpingSince != 0;
 	}
 }
