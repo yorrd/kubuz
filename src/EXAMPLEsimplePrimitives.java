@@ -126,7 +126,7 @@ public class EXAMPLEsimplePrimitives {
             @Override
             public void invoke(long window, int key, int scancode, int action, int mods) {
 
-                if(gameover && key == GLFW_KEY_ESCAPE)
+                if(gameover && key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
                     restart();
             	else if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
                     glfwSetWindowShouldClose(window, true); // We will detect this in our rendering loop
@@ -139,6 +139,10 @@ public class EXAMPLEsimplePrimitives {
                 if ( key == GLFW_KEY_B && action == GLFW_PRESS ) {
                     if(paused) resume();
                     else pause();
+                }
+                if ( key == GLFW_KEY_BACKSPACE && action == GLFW_RELEASE ) {
+                    tubus = new Kubus(segments, ++numEdges);
+                    restart();
                 }
             }
         });

@@ -6,7 +6,6 @@ class GUI extends Renderable {
     private int totalLifes = 3;
     private int currentLifes = 3;
     boolean gameOver = false;
-    boolean fresh = true;
 
 	GUI() {
         textureFile = "life.png";
@@ -17,26 +16,6 @@ class GUI extends Renderable {
 
     @Override
     public void createGeometry() {
-
-        if(fresh) {
-            textureFile = "gameover.png";
-            vertexArray = new float[] {
-                    -1, -1, 1,
-                    1, -1, 1,
-                    -1,  1, 1,
-                    1,  1, 1,
-            };
-            textureArray = new float[] {
-                    0, 1,
-                    1, 1,
-                    0, 0,
-                    1, 0,
-            };
-            indexArray = new int[] {0, 1, 2, 2, 1, 3};
-
-            fresh = false;
-            return;
-        }
 
         if(EXAMPLEsimplePrimitives.paused || gameOver) {
 
