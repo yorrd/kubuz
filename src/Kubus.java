@@ -168,4 +168,10 @@ public class Kubus extends Renderable {
     float getGround() {
     	return vertexArray[1];
     }
+
+	public void reset() {
+        stage = new Level(segments, numEdges);
+        curr_level = stage.get_level();
+		super.reset();
+	}
 }

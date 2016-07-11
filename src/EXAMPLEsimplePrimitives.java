@@ -57,6 +57,7 @@ public class EXAMPLEsimplePrimitives {
     static {
         steeringKeysPressed.put(GLFW_KEY_RIGHT, false);
         steeringKeysPressed.put(GLFW_KEY_LEFT, false);
+        steeringKeysPressed.put(GLFW_KEY_SPACE, false);
     }
 
     private int currentlyFalling = 0;
@@ -78,6 +79,7 @@ public class EXAMPLEsimplePrimitives {
             backgroundMusic = new Playable("./background.wav", true, 1f);
             click = new Playable("./click.wav", false, 1f);
             gameoverSound = new Playable("./gameover.wav", false, 1f);
+            pause();
             loop();
 
             // Release window and window callbacks
@@ -129,7 +131,7 @@ public class EXAMPLEsimplePrimitives {
             	else if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
                     glfwSetWindowShouldClose(window, true); // We will detect this in our rendering loop
 
-                if ( key == GLFW_KEY_RIGHT || key == GLFW_KEY_LEFT ) {
+                if ( key == GLFW_KEY_RIGHT || key == GLFW_KEY_LEFT || key == GLFW_KEY_SPACE ) {
                     steeringKeysPressed.put(key, action != GLFW_RELEASE);
                     if(action == GLFW_PRESS)
                         click.play();
@@ -242,7 +244,7 @@ public class EXAMPLEsimplePrimitives {
                         insectAngle += turnIncrement;
                     }
                     if(!guy.isInBounds(-tubus.getWidth() / 2, tubus.getWidth() / 2)) {
-                    	tubus.turn(true);
+                        tubus.turn(true);
                         guy.modifyModel(0, 0, 0, -(tubus.getWidth() - guy.getBodyWidth()), 0, 0);
                         posX -= (tubus.getWidth() - guy.getBodyWidth());
                     }
@@ -255,7 +257,7 @@ public class EXAMPLEsimplePrimitives {
                         insectAngle -= turnIncrement;
                     }
                     if (!guy.isInBounds(-tubus.getWidth() / 2, tubus.getWidth() / 2)) {
-                    	tubus.turn(false);
+                        tubus.turn(false);
                         guy.modifyModel(0, 0, 0, tubus.getWidth() - guy.getBodyWidth(), 0, 0);
                         posX += (tubus.getWidth() - guy.getBodyWidth());
                     }
@@ -267,15 +269,19 @@ public class EXAMPLEsimplePrimitives {
                         guy.modifyModel(0, change, 0, 0, 0, 0);
                     }
                 }
+                if(steeringKeysPressed.get(GLFW_KEY_SPACE) && !guy.isJumping()) {
+                    guy.jump();
+                }
+                if(guy.isJumping())
+                    guy.doJumpStep();
 
                 // check if we're falling through at the moment
                 if(immune > 0) immune--;
-                if (tubus.isHole(posX, posZ) && immune == 0) {  // if we're on a hole and not immune at the moment
+                if (tubus.isHole(posX, posZ) && immune == 0 && !guy.isJumping()) {  // if we're on a hole and not immune at the moment
                     guy.fall();
                     currentlyFalling = 80;
                 }
-            } 
-            else if (!paused && currentlyFalling == 1){
+            } else if (!paused && currentlyFalling == 1){
                 if(gui.reduceLife()) {
                     gameover = true;
                     pause();
@@ -285,11 +291,10 @@ public class EXAMPLEsimplePrimitives {
                 guy.reset();
                 insectAngle = 0;
                 posX = 0;
-            }           
-            else if(!paused && currentlyFalling > 0) {
+            } else if(!paused && currentlyFalling > 0) {
                 guy.fall();
                 currentlyFalling -= 1;
-            }       
+            }
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
@@ -333,7 +338,7 @@ public class EXAMPLEsimplePrimitives {
         resume();
         guy.reset();
         tubus.reset();
-        // TODO reset kubus and stuff
+        gui = new GUI();
     }
  	
     public static void main(String[] args) {

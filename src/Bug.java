@@ -16,6 +16,8 @@ class Bug extends Renderable{
 			-bodySize, 0.0f, -bodySize,		
 	};
     private long fallingSince = 0;
+	private int jumpingSince = 0;
+    private float lastJumpPoint = 0;
 	
 	// Constructor
 	Bug(){
@@ -185,10 +187,34 @@ class Bug extends Renderable{
 
     public void reset() {
         fallingSince = 0;
+        jumpingSince = 0;
         super.reset();
     }
 
     public float getBodyWidth() {
         return 0.15f * 2;
     }
+
+	public void jump() {
+		jumpingSince = 1;
+	}
+
+	public void doJumpStep() {
+        float x = jumpingSince++;
+		float p1 = lastJumpPoint;
+        float p2 = (float) (-1/1800D*Math.pow(x-30, 2) + .5);
+        lastJumpPoint = p2;
+        float delta = p2 - p1;
+
+        System.out.println(p2-p1);
+
+        if(jumpingSince > 60) {
+            jumpingSince = 0;
+            lastJumpPoint = 0;
+        } else modifyModel(0, 0, 0, 0, delta, 0);
+	}
+
+	public boolean isJumping() {
+		return jumpingSince != 0;
+	}
 }
