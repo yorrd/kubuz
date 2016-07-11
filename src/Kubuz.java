@@ -28,7 +28,7 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
 
-public class EXAMPLEsimplePrimitives {
+public class Kubuz {
  
     // We need to strongly reference callback instances.
     private GLFWErrorCallback errorCallback;
@@ -42,8 +42,8 @@ public class EXAMPLEsimplePrimitives {
     private static int WIDTH = 800;
     private static int HEIGHT = 800;
     
-    private Kubus tubus;
-    private Bug guy;
+    private Tubus tubus;
+    private Insect player;
     private GUI gui;
     private LevelGUI levelGUI;
     private Renderable backdrop;
@@ -73,10 +73,10 @@ public class EXAMPLEsimplePrimitives {
             init();
 
             // initialize each object (extending Renderable) using initObject(object)
-            tubus = new Kubus(segments, numEdges);
+            tubus = new Tubus(segments, numEdges);
             gui = new GUI();
             levelGUI = new LevelGUI();
-            guy = new Bug();
+            player = new Insect(tubus.getGround());
             backdrop = new Backdrop();
             backgroundMusic = new Playable("./background.wav", true, 1f);
             click = new Playable("./click.wav", false, 1f);
@@ -143,8 +143,8 @@ public class EXAMPLEsimplePrimitives {
                     else pause();
                 }
                 if ( key == GLFW_KEY_BACKSPACE && action == GLFW_RELEASE && paused ) {
-                    if(numEdges > 9) numEdges = 4;
-                    tubus = new Kubus(segments, ++numEdges);
+                    if(numEdges > 9) numEdges = 3;
+                    tubus = new Tubus(segments, ++numEdges);
                     restart();
                 }
             }
@@ -240,52 +240,52 @@ public class EXAMPLEsimplePrimitives {
 
                 tubus.moveZ(speed);
                 if(tubus.progress()) levelGUI.increase();
-                guy.animate();
+                player.animate();
 
                 // evaluate this.steeringKeysPressed aka make it move like the user asked us to
                 if(steeringKeysPressed.get(GLFW_KEY_RIGHT)) {
-                    guy.modifyModel(0,0,0,movingIncrement,0,0);
+                    player.modifyModel(0,0,0,movingIncrement,0,0);
                     posX += movingIncrement;
                     if(insectAngle < maxTurnDegree) {
-                        guy.modifyModel(0,turnIncrement,0,0,0,0);
+                        player.modifyModel(0,turnIncrement,0,0,0,0);
                         insectAngle += turnIncrement;
                     }
-                    if(!guy.isInBounds(-tubus.getWidth() / 2, tubus.getWidth() / 2)) {
+                    if(!player.isInBounds(-tubus.getWidth() / 2, tubus.getWidth() / 2)) {
                         tubus.turn(true);
-                        guy.modifyModel(0, 0, 0, -(tubus.getWidth() - guy.getBodyWidth()), 0, 0);
-                        posX -= (tubus.getWidth() - guy.getBodyWidth());
+                        player.modifyModel(0, 0, 0, -(tubus.getWidth() - player.getBodyWidth()), 0, 0);
+                        posX -= (tubus.getWidth() - player.getBodyWidth());
                     }
                 }
                 if(steeringKeysPressed.get(GLFW_KEY_LEFT)) {
-                    guy.modifyModel(0,0,0,-movingIncrement,0,0);
+                    player.modifyModel(0,0,0,-movingIncrement,0,0);
                     posX -= movingIncrement;
                     if(insectAngle > -maxTurnDegree) {
-                        guy.modifyModel(0,-turnIncrement,0,0,0,0);
+                        player.modifyModel(0,-turnIncrement,0,0,0,0);
                         insectAngle -= turnIncrement;
                     }
-                    if (!guy.isInBounds(-tubus.getWidth() / 2, tubus.getWidth() / 2)) {
+                    if (!player.isInBounds(-tubus.getWidth() / 2, tubus.getWidth() / 2)) {
                         tubus.turn(false);
-                        guy.modifyModel(0, 0, 0, tubus.getWidth() - guy.getBodyWidth(), 0, 0);
-                        posX += (tubus.getWidth() - guy.getBodyWidth());
+                        player.modifyModel(0, 0, 0, tubus.getWidth() - player.getBodyWidth(), 0, 0);
+                        posX += (tubus.getWidth() - player.getBodyWidth());
                     }
                 }
                 if(!steeringKeysPressed.get(GLFW_KEY_LEFT) && !steeringKeysPressed.get(GLFW_KEY_RIGHT)) {
                     if(insectAngle != 0) {
                         int change = turnIncrement * (insectAngle < 0 ? 1 : -1);
                         insectAngle += change;
-                        guy.modifyModel(0, change, 0, 0, 0, 0);
+                        player.modifyModel(0, change, 0, 0, 0, 0);
                     }
                 }
-                if(steeringKeysPressed.get(GLFW_KEY_SPACE) && !guy.isJumping()) {
-                    guy.jump();
+                if(steeringKeysPressed.get(GLFW_KEY_SPACE) && !player.isJumping()) {
+                    player.jump();
                 }
-                if(guy.isJumping())
-                    guy.doJumpStep();
+                if(player.isJumping())
+                    player.doJumpStep();
 
                 // check if we're falling through at the moment
                 if(immune > 0) immune--;
-                if (tubus.isHole(posX, posZ) && immune == 0 && !guy.isJumping()) {  // if we're on a hole and not immune at the moment
-                    guy.fall();
+                if (tubus.isHole(posX, posZ) && immune == 0 && !player.isJumping()) {  // if we're on a hole and not immune at the moment
+                    player.fall();
                     currentlyFalling = 80;
                 }
             } else if (!paused && currentlyFalling == 1){
@@ -295,11 +295,11 @@ public class EXAMPLEsimplePrimitives {
                 }
             	currentlyFalling = 0;
                 immune = 60;
-                guy.resetTranslationMatrix();
+                player.resetTranslationMatrix();
                 insectAngle = 0;
                 posX = 0;
             } else if(!paused && currentlyFalling > 0) {
-                guy.fall();
+                player.fall();
                 currentlyFalling -= 1;
             }
 
@@ -310,7 +310,7 @@ public class EXAMPLEsimplePrimitives {
             backdrop.render();
             glEnable(GL_DEPTH_TEST);
             tubus.render();
-            guy.render();
+            player.render();
             glDisable(GL_DEPTH_TEST);
             levelGUI.render();
             gui.render();
@@ -343,7 +343,7 @@ public class EXAMPLEsimplePrimitives {
 
     private void restart() {
         gameover = false;
-        guy.resetTranslationMatrix();
+        player.resetTranslationMatrix();
         tubus.resetTranslationMatrix();
         levelGUI.reset();
         gui = new GUI();
@@ -351,7 +351,7 @@ public class EXAMPLEsimplePrimitives {
     }
  	
     public static void main(String[] args) {
-        new EXAMPLEsimplePrimitives().run();
+        new Kubuz().run();
     }
  
 }

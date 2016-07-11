@@ -7,7 +7,7 @@
 
 
 
-public class Kubus extends Renderable {
+public class Tubus extends Renderable {
 
     private int renderDepth = 15;
     private int numEdges;
@@ -22,7 +22,7 @@ public class Kubus extends Renderable {
     private Level stage;
 	
 	// Constructor
-	public Kubus(int segments, int numEdges){
+	public Tubus(int segments, int numEdges){
         textureFile = "gdv.png";
 
 		this.segments = segments;

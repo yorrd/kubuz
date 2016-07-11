@@ -17,7 +17,7 @@ class GUI extends Renderable {
     @Override
     public void createGeometry() {
 
-        if(EXAMPLEsimplePrimitives.paused || gameOver) {
+        if(Kubuz.paused || gameOver) {
 
             textureFile = gameOver ? "gameover.png" : "pause.png";
             vertexArray = new float[] {

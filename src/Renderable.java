@@ -54,7 +54,7 @@ abstract class Renderable {
     private FloatBuffer vertexBuffer;
     private FloatBuffer textureBuffer;
     private IntBuffer indexBuffer;
-    protected Vec3 cameraPos = new Vec3(0,2.4f,-1.4);
+    protected Vec3 cameraPos = new Vec3(0,1.8f,-1.4);
     private Vec3 modelAngle = new Vec3(0,0,0);
     protected Vec3 translate = new Vec3(0,0,1);
     protected Vec3 defaultModelAngle = new Vec3(0, 0, 0);
