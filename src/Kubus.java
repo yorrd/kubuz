@@ -146,12 +146,13 @@ public class Kubus extends Renderable {
     }
     
     // checks lvl progress
-    void progress() {
+    boolean progress() {
     	if (position == 50 + renderDepth){ 
     		position = 0;
         	stage.next_level();
         	curr_level = stage.get_level();
-    	}
+            return true;
+    	} else return false;
     }
 
 	float getWidth() {

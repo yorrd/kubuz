@@ -45,6 +45,7 @@ public class EXAMPLEsimplePrimitives {
     private Kubus tubus;
     private Bug guy;
     private GUI gui;
+    private LevelGUI levelGUI;
     private Renderable backdrop;
 	private float speed = 0.01f;
 	private int numEdges = 6;
@@ -74,6 +75,7 @@ public class EXAMPLEsimplePrimitives {
             // initialize each object (extending Renderable) using initObject(object)
             tubus = new Kubus(segments, numEdges);
             gui = new GUI();
+            levelGUI = new LevelGUI();
             guy = new Bug();
             backdrop = new Backdrop();
             backgroundMusic = new Playable("./background.wav", true, 1f);
@@ -236,7 +238,7 @@ public class EXAMPLEsimplePrimitives {
                 // =============================== Mechanics =========================================
 
                 tubus.moveZ(speed);
-                tubus.progress();
+                if(tubus.progress()) levelGUI.increase();
                 guy.animate();
 
                 // evaluate this.steeringKeysPressed aka make it move like the user asked us to
@@ -309,6 +311,7 @@ public class EXAMPLEsimplePrimitives {
             tubus.render();
             guy.render();
             glDisable(GL_DEPTH_TEST);
+            levelGUI.render();
             gui.render();
 
             // Swap the color buffer. We never draw directly to the screen, only in this buffer. So we need to display it
