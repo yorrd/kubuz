@@ -13,32 +13,32 @@ import java.util.Random;
 
 public class Level {
 	
-	private boolean[][] currLevel;
-	private int lvlCounter = 0;
+	private boolean[][] curr_level;
+	private int level_counter;
 	private int renderDepth = 15;
-	private int maxLength = 50 + 2*renderDepth;
+	private int max_length = 50 + 2*renderDepth;
 	private int segments;
 	private int edges;	
 	
 	
 	// constructor, creates the first level with one hole per segment
 	public Level(int segments, int edges){
-		currLevel = new boolean[maxLength][segments * edges];
+		curr_level = new boolean[max_length][segments * edges];
 		this.segments = segments;
 		this.edges = edges;
 		oneHolePerSegment();
-		lvlCounter++;
+		level_counter++;
 	}
 	
 	// returns the current level
 	public boolean[][] get_level(){
-		return currLevel;
+		return curr_level;
 	}
 	
 	// generates the next level
 	public void next_level(){
-		lvlCounter++;
-		switch (lvlCounter){
+		level_counter++;
+		switch (level_counter){
 			case 2: oneHolePerSegment();
 					break;
 			case 3: oneHolePerSegment();
@@ -58,9 +58,9 @@ public class Level {
 	public void oneHolePerSegment() {
 		Random rand = new Random();
 		int j;
-		for(int i = renderDepth; i < maxLength - renderDepth; i++){
+		for(int i = renderDepth; i < max_length - renderDepth; i++){
 			j = rand.nextInt(segments * edges);
-			currLevel[i][j] = true;
+			curr_level[i][j] = true;
 		}
 	}
 	
@@ -68,13 +68,13 @@ public class Level {
 	public void removeSegment() {
 		Random rand = new Random();
 		int i;
-		i = rand.nextInt(maxLength - 2*renderDepth);
+		i = rand.nextInt(max_length - 2*renderDepth);
 		i += renderDepth;
 		for(int j = 0; j < segments * edges; j++){
-			currLevel[i][j] = true;
+			curr_level[i][j] = true;
 		}
 		// generates a "bridge"
 		int j = rand.nextInt(segments * edges);
-		currLevel[i][j] = false;
+		curr_level[i][j] = false;
 	}
 }
