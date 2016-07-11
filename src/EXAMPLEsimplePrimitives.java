@@ -292,7 +292,7 @@ public class EXAMPLEsimplePrimitives {
                 }
             	currentlyFalling = 0;
                 immune = 60;
-                guy.reset();
+                guy.resetTranslationMatrix();
                 insectAngle = 0;
                 posX = 0;
             } else if(!paused && currentlyFalling > 0) {
@@ -340,8 +340,8 @@ public class EXAMPLEsimplePrimitives {
     private void restart() {
         gameover = false;
         resume();
-        guy.reset();
-        tubus.reset();
+        guy.resetTranslationMatrix();
+        tubus.resetTranslationMatrix();
         gui = new GUI();
     }
  	

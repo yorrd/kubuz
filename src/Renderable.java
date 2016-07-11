@@ -1,3 +1,12 @@
+/**
+ * abstract class for handling objects that are renderable
+ * some functions used from simplePrimivites
+ * 
+ * @author 
+ * 
+ */
+
+
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.opengl.GL15.*;
@@ -54,18 +63,24 @@ abstract class Renderable {
     private Matrix4 viewMatrix = null;
     private Matrix4 modelMatrix = null;
 
-
+    // must be overwritten by the object class
     public abstract void createGeometry();
 
     // constructor MUST call init
     public void init() {
+    	// every object must create textureArray, vertexArray and indexArray via createGeometry
         createGeometry();
-    	textureID = loadPNGTexture("./assets/" + textureFile, GL_TEXTURE0);
+        // sets the texture for the object
+        textureID = loadPNGTexture("./assets/" + textureFile, GL_TEXTURE0);
+        // creates buffers only once
     	initBuffers();
+    	// setup shades only once
     	setupShader();
-        reset();
+    	// resets the translation matrix
+        resetTranslationMatrix();
     }
        
+    // function to modify the translation matrix, additive
     public void modifyModel(float setMX, float setMY, float setMZ, float setTX, float setTY, float setTZ){
     	modelAngle.x += setMX;
     	modelAngle.y += setMY;
@@ -76,7 +91,8 @@ abstract class Renderable {
         setupMatrices();
     }
 
-    public void reset() {
+    // function to reset the translation matrix to default values
+    public void resetTranslationMatrix() {
         modelAngle.x = defaultModelAngle.x;
         modelAngle.y = defaultModelAngle.y;
         modelAngle.z = defaultModelAngle.z;
@@ -86,7 +102,9 @@ abstract class Renderable {
         setupMatrices();
     }
     
+    // creates the buffers for the object
     private void initBuffers() {
+    	// creates the buffer in the main memory
         vaoId = glGenVertexArrays();
         vboId = glGenBuffers();
         tboId = glGenBuffers();
@@ -95,7 +113,7 @@ abstract class Renderable {
         textureBuffer = BufferUtils.createFloatBuffer(textureArray.length);
         indexBuffer = BufferUtils.createIntBuffer(indexArray.length);
         
-
+        // creates the buffer in the graphic card
         glBindVertexArray(vaoId);
         
 		glBindBuffer(GL_ARRAY_BUFFER, vboId);
@@ -111,7 +129,9 @@ abstract class Renderable {
      	
     }
    
+    // updates the buffers
     private void updateBuffers() {
+    	// clears the buffer, assigns the new data
     	vertexBuffer.clear();
     	vertexBuffer.put(vertexArray);
     	vertexBuffer.flip();
@@ -124,6 +144,7 @@ abstract class Renderable {
     	indexBuffer.put(indexArray);
     	indexBuffer.flip();
     	
+    	// loads the new data into the graphic card
 		glBindVertexArray(vaoId);
 		
 		glBindBuffer(GL_ARRAY_BUFFER, vboId);
@@ -143,25 +164,27 @@ abstract class Renderable {
         
     }
     
-    
+    // function for drawing the object
     void render() {
+    	// first update the buffers
     	updateBuffers();
     	
     	
-        // Upload matrices to the uniform variables to shader program 0
+        // enable shader program
         glUseProgram(pId);
-
+        
+        // update translation matrix, projection matrix and model matrix
         glUniformMatrix4fv(projectionMatrixLocation, false, toFFB(projectionMatrix));
         glUniformMatrix4fv(viewMatrixLocation, false, toFFB(viewMatrix));
         glUniformMatrix4fv(modelMatrixLocation, false, toFFB(modelMatrix));
 
+        // binds texture
         glUniform1i(useTextureLocation, GL_TRUE);
-        
         glBindTexture(GL_TEXTURE_2D, textureID);
 
         // Bind to the VAO that has all the information about the vertices
         glBindVertexArray(vaoId);
-        glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(0); // vertex coordinates
         glEnableVertexAttribArray(1); // texture coordinates
 
         // Bind to the index VBO that has all the information about the order of the vertices
@@ -179,10 +202,10 @@ abstract class Renderable {
         glUseProgram(0);
     }
         
+    // setup shaders from example
     private void setupShader() {
         pId = glCreateProgram();
 
-        // setup shaders
         vsId = loadShader("./src/shaders/" + shaderVFile, GL_VERTEX_SHADER);
         fsId = loadShader("./src/shaders/" + shaderFFile, GL_FRAGMENT_SHADER);
 
@@ -191,7 +214,7 @@ abstract class Renderable {
 
         // Position information will be attribute 0
         glBindAttribLocation(pId, 0, "in_Position");
-        // Texture coordinates information will be attribute 3
+        // Texture coordinates information will be attribute 1
         glBindAttribLocation(pId, 1, "in_TextureCoord");
         
         glLinkProgram(pId);
@@ -254,7 +277,7 @@ abstract class Renderable {
 		return (FloatBuffer) res.flip();
 	}
     
-    // Setupmatrices from example
+    // setupmatrices from example
     private void setupMatrices() {
     	// Setup projection and view matrix
     	projectionMatrix = new PerspectiveMatrix(-1,1,-1,1,0.1f,20f);

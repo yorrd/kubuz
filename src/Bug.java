@@ -185,10 +185,10 @@ class Bug extends Renderable{
 		modifyModel(0, 0, 0, 0, -duration * 9.81f / 10, 0);  // 1/10 just looks nice
     }
 
-    public void reset() {
+    public void resetTranslationMatrix() {
         fallingSince = 0;
         jumpingSince = 0;
-        super.reset();
+        super.resetTranslationMatrix();
     }
 
     public float getBodyWidth() {
