@@ -142,7 +142,8 @@ public class EXAMPLEsimplePrimitives {
                     if(paused) resume();
                     else pause();
                 }
-                if ( key == GLFW_KEY_BACKSPACE && action == GLFW_RELEASE ) {
+                if ( key == GLFW_KEY_BACKSPACE && action == GLFW_RELEASE && paused ) {
+                    if(numEdges > 9) numEdges = 4;
                     tubus = new Kubus(segments, ++numEdges);
                     restart();
                 }
