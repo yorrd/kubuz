@@ -17,7 +17,7 @@ class Bug extends Renderable{
 	};
     private long fallingSince = 0;
 	private int jumpingSince = 0;
-    private float lastJumpPoint = 0;
+    private double lastJumpPoint = 0;
 	
 	// Constructor
 	Bug(){
@@ -201,17 +201,14 @@ class Bug extends Renderable{
 
 	public void doJumpStep() {
         float x = jumpingSince++;
-		float p1 = lastJumpPoint;
-        float p2 = (float) (-1/1800D*Math.pow(x-30, 2) + .5);
-        lastJumpPoint = p2;
-        float delta = p2 - p1;
+        double currentY = -1/1800D*Math.pow(x-30, 2) + .5f;
+        double delta = currentY - lastJumpPoint;
+        lastJumpPoint = currentY;
 
-        System.out.println(p2-p1);
-
-        if(jumpingSince > 60) {
+        if(jumpingSince > 60 + 1) {
             jumpingSince = 0;
             lastJumpPoint = 0;
-        } else modifyModel(0, 0, 0, 0, delta, 0);
+        } else modifyModel(0, 0, 0, 0, (float) delta, 0);
 	}
 
 	public boolean isJumping() {
