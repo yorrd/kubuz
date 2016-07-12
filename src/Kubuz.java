@@ -59,6 +59,10 @@ public class Kubuz {
     private static final int WIDTH = 800;
     private static final int HEIGHT = 800;
 
+    /**
+     * Main Function. Will be run from the public static void main(). Here, we initialize all needed objects and start
+     * the loop. Also, we call the init function to set up keybindings and some other stuff.
+     */
     private void run() {
         try {
             init();
@@ -87,7 +91,11 @@ public class Kubuz {
             glfwTerminate();
         }
     }
- 
+
+    /**
+     * Preparing OpenGL for rendering, the various actions are commented. Setting up key bindings and the window
+     * resize listener.
+     */
     private void init() {
 
         // Initialize GLFW. Most GLFW functions will not work before doing this.
@@ -211,10 +219,17 @@ public class Kubuz {
     }
 
 
+    /**
+     * The heart of the application, this is run 60 times a second. It will handle game mechanics such as falling
+     * through holes and reacting on key presses as well as render all objects with each frame.
+     *
+     * @throws Exception
+     */
     private void loop() throws Exception {
 
         backgroundMusic.play();
 
+        // initialize some generic variables which can be tweaked to change the player experience
         int maxTurnDegree = 20;
         int turnIncrement = 4;
         float movingIncrement = .03f;
@@ -234,12 +249,15 @@ public class Kubuz {
 
                 // evaluate this.steeringKeysPressed aka make it move like the user asked us to
                 if(steeringKeysPressed.get(GLFW_KEY_RIGHT)) {
+                    // move
                     player.modifyModel(0,0,0,movingIncrement,0,0);
                     posX += movingIncrement;
+                    // turn
                     if(insectAngle < maxTurnDegree) {
                         player.modifyModel(0,turnIncrement,0,0,0,0);
                         insectAngle += turnIncrement;
                     }
+                    // wrap if we reach the sides
                     if(!player.isInBounds(-tubus.getWidth() / 2, tubus.getWidth() / 2)) {
                         tubus.turn(true);
                         player.modifyModel(0, 0, 0, -(tubus.getWidth() - player.getBodyWidth()), 0, 0);
@@ -247,18 +265,22 @@ public class Kubuz {
                     }
                 }
                 if(steeringKeysPressed.get(GLFW_KEY_LEFT)) {
+                    // move
                     player.modifyModel(0,0,0,-movingIncrement,0,0);
                     posX -= movingIncrement;
+                    // turn
                     if(insectAngle > -maxTurnDegree) {
                         player.modifyModel(0,-turnIncrement,0,0,0,0);
                         insectAngle -= turnIncrement;
                     }
+                    // wrap if we reach the sides
                     if (!player.isInBounds(-tubus.getWidth() / 2, tubus.getWidth() / 2)) {
                         tubus.turn(false);
                         player.modifyModel(0, 0, 0, tubus.getWidth() - player.getBodyWidth(), 0, 0);
                         posX += (tubus.getWidth() - player.getBodyWidth());
                     }
                 }
+                // slowly reset rotation of the insect if there are no keys pressed
                 if(!steeringKeysPressed.get(GLFW_KEY_LEFT) && !steeringKeysPressed.get(GLFW_KEY_RIGHT)) {
                     if(insectAngle != 0) {
                         int change = turnIncrement * (insectAngle < 0 ? 1 : -1);
@@ -266,9 +288,11 @@ public class Kubuz {
                         player.modifyModel(0, change, 0, 0, 0, 0);
                     }
                 }
+                // initialize jump
                 if(steeringKeysPressed.get(GLFW_KEY_SPACE) && !player.isJumping()) {
                     player.jump();
                 }
+                // call jump animation steps if we're still jumping
                 if(player.isJumping())
                     player.doJumpStep();
 
@@ -278,7 +302,8 @@ public class Kubuz {
                     player.fall();
                     currentlyFalling = 80;
                 }
-            } else if (!paused && currentlyFalling == 1){
+            } else if (!paused && currentlyFalling == 1) {
+                // we just fell through, now reset everything and reduce the lives by one
                 if(gui.reduceLife()) {
                     gameOver = true;
                     pause();
@@ -289,6 +314,7 @@ public class Kubuz {
                 insectAngle = 0;
                 posX = 0;
             } else if(!paused && currentlyFalling > 0) {
+                // do a fall animation step until we fell a bit (don't instantly reset, that'd look weird)
                 player.fall();
                 currentlyFalling -= 1;
             }
@@ -298,6 +324,8 @@ public class Kubuz {
             // ================================== Draw object =====================================
 
             backdrop.render();
+            // only render tubus and player with depth test, the rest are UI and backdrop elements which are just
+            // rendered in the right order to ensure correct display of the objects
             glEnable(GL_DEPTH_TEST);
             tubus.render();
             player.render();
@@ -317,6 +345,9 @@ public class Kubuz {
         }
     }
 
+    /**
+     * Pause function. It will play the gameover sound if the player has failed and pause the background music.
+     */
     private void pause() {
         if(gameOver) gameoverSound.play();
         paused = true;
@@ -324,6 +355,9 @@ public class Kubuz {
         backgroundMusic.pause();
     }
 
+    /**
+     * Resume, see pause.
+     */
     private void resume() {
         if(gameOver) return;
         paused = false;
@@ -331,6 +365,9 @@ public class Kubuz {
         backgroundMusic.play();
     }
 
+    /**
+     * Restart function. Reset all objects in the scene and call the resume function
+     */
     private void restart() {
         gameOver = false;
         player.reset();
