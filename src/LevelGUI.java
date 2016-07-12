@@ -1,7 +1,9 @@
 
-/*
-* Another GUI object just for the level counter in the top right. This holds 4 tiny Renderables which it just displays.
-*/
+/**
+ * Another GUI object just for the level counter in the top right. This holds 4 tiny Renderables which it just displays.
+ *
+ * @author Kai Brobeil
+ */
 
 class LevelGUI {
 

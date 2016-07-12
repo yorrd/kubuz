@@ -1,7 +1,9 @@
 
-/*
-* Super simple class just for displaying the stars backdrop image. This extends Renderable.
-*/
+/**
+ * Super simple class just for displaying the stars backdrop image. This extends Renderable.
+ *
+ * @author Kai Brobeil
+ */
 
 class Backdrop extends Renderable {
 

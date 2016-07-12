@@ -6,9 +6,11 @@ import java.util.Objects;
 
 import static org.lwjgl.openal.AL10.*;
 
-/*
-* Basic class for all sounds in the game including background music. Is instantiated for each sound.
-*/
+/**
+ * Basic class for all sounds in the game including background music. Is instantiated for each sound.
+ *
+ * @author Kai Brobeil
+ */
 
 class Playable {
 

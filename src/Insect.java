@@ -1,8 +1,10 @@
 import mat.Vec3;
 
-/*
-* The insect which is controlled by the player. It has a body and legs, can move, jump and fall. Subclass of Renderable.
-*/
+/**
+ * The insect which is controlled by the player. It has a body and legs, can move, jump and fall. Subclass of Renderable.
+ *
+ * @author Sebastian Kriege
+ */
 
 class Insect extends Renderable{
 

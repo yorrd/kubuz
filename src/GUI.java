@@ -1,6 +1,8 @@
-/*
-* Multi-Purpose GUI, shows pause and game over screens or number of lives while playing
-*/
+/**
+ * Multi-Purpose GUI, shows pause and game over screens or number of lives while playing
+ *
+ * @author Kai Brobeil
+ */
 class GUI extends Renderable {
 
     private int totalLifes = 3;

@@ -18,6 +18,12 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
 
+/**
+ * Main class, holds GLFW logic, the main loop, key handling, etc.
+ *
+ * @author Kai Brobeil and Sebastian Kriege
+ */
+
 public class Kubuz {
 
     private Tubus tubus;

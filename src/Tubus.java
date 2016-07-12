@@ -1,6 +1,9 @@
-/*
+/**
 * Tubus, which the player is running through. This is also a renderable object.
+*
+* @author Sebastian Kriege
 */
+
 public class Tubus extends Renderable {
 
     private int renderDepth = 15;

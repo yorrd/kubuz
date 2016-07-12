@@ -30,7 +30,7 @@ import mat.Vec3;
  * There are different shaders used throughout the game, two each for 3D objects and for the GUI objects which don't
  * require any matrix transformations because of its HUD-nature.
  *
- * @author
+ * @author Sebastian Kriege
  *
  */
 
