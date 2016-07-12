@@ -216,6 +216,7 @@ public class Tubus extends Renderable {
     void reset() {
         stage = new Level(segments, numEdges);
         curLevel = stage.get_level();
-		resetTranslationMatrix();
+        position = 0;
+        createGeometry();
 	}
 }
